@@ -13,15 +13,17 @@ Unproductive emails do not require an action or response (e.g. congratulations, 
 Return ONLY a valid JSON object with the following structure:
 
 {
-  "productivity": "productive" | "unproductive",
+  "category": "Produtivo" | "Improdutivo" classifique com base no contexto do email se ele é necessário responder ou não respectivamente (produtivo ou improdutivo),
+  "confidence": percentage of accuracy of your the classification must be json float between 0.0 and 100.0,
   "reason": "detailed explanation in portuguese"
+  "answerSuggestion": "A suggestion for an answer to the sent email it have to be in portuguese and profeesional based on the email context"
 }
 
 The reason must be written in Portuguese and include:
 - the context of the email
 - the sender's intention
 - the emotional tone or feeling of the sender
-- some suggestions for action or response if that email is productive of what the sender is asking for
+- some suggestions for action or response if that email is productive and the level of urgency of what the sender is asking for
 """
 
 

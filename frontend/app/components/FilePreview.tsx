@@ -7,7 +7,7 @@ interface FilePreviewProps {
 
 export default function FilePreview({ file, onRemove }: FilePreviewProps) {
   return (
-    <div className="flex flex-col gap-2 bg-[#242424] shadow-[0_0_20px_#00ff8833] p-6 border border-[#00ff88] border-solid rounded-2xl w-full">
+    <div className="flex flex-col gap-2 bg-[#242424] shadow-[0_0_20px_#00ff8833] p-6 border border-[#00ff88] border-solid rounded-2xl w-full h-fit">
       <div className="flex justify-between items-center">
         <div>
           <p className="text-[#f2f2f2]">{file.name}</p>

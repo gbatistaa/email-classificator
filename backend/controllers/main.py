@@ -1,47 +1,85 @@
-from backend.services.process_pdf_service import process_pdf
-from _operator import concat
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 from dotenv import load_dotenv
-from backend.services.gemini_service import analyze_email
+from pydantic import BaseModel
+from services.process_pdf_service import process_pdf
+from services.gemini_service import analyze_email
 
 load_dotenv()
 
 app = FastAPI()
 
+# CORS - permitir requisições do frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 UPLOAD_DIR = Path("uploads")
 UPLOAD_DIR.mkdir(exist_ok=True)
 
 
-@app.post("/upload")
-async def upload_file(file: UploadFile = File(...)):
-    content = await file.read()
+# Análise de arquivo (PDF)
+@app.post("/analyze")
+async def analyze_file(file: UploadFile = File(...)):
+    if not file:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Arquivo não enviado")
+
+    if file.content_type not in ("application/pdf", "text/plain"):
+        raise HTTPException(
+            status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            f"Tipo não suportado: {file.content_type.split('/')[1]}",
+        )
+
+    content = None
+    try:
+        content = await file.read()
+    except Exception:
+        raise HTTPException(500, "Falha ao ler o arquivo")
+
     file_path = UPLOAD_DIR / file.filename
 
-    if file.content_type == "application/pdf":
-        print("Começo do processamento do PDF")
-        pdf_data = process_pdf(file, file_path, content)
-        print("Fim do processamento do PDF")
-        print("Análise do email pelo Gemini")
-        return analyze_email(pdf_data["file_markdown"])
+    try:
+        file_path.write_bytes(content)
 
-    file_path.write_bytes(content)
-    file_info = {
-        "filename": file.filename,
-        "saved_to": str(file_path),
-        "file_type": file.content_type,
-        "file_size": concat(str(len(content)), " bytes"),
-        "file_content": content.decode("utf-8"),
-    }
+        if file.content_type == "application/pdf":
+            markdown = await process_pdf(file, file_path)
+            return analyze_email(markdown)
 
-    return file_info
+        if file.content_type == "text/plain":
+            print("opa um arquivo txt")
+            try:
+                plain_text = content.decode("utf-8")
+            except UnicodeDecodeError:
+                raise HTTPException(422, "Arquivo TXT não está em UTF-8")
+
+            return analyze_email(plain_text)
+
+    except Exception as e:
+        raise HTTPException(422, f"Erro ao processar PDF: {str(e)}")
 
 
+# Análise de texto
+class TextAnalyzeRequest(BaseModel):
+    text: str
+
+
+@app.post("/analyze-text")
+async def analyze_text(request: TextAnalyzeRequest):
+    if not request.text or len(request.text.strip()) == 0:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Texto não enviado")
+
+    try:
+        return analyze_email(request.text)
+    except Exception as e:
+        raise HTTPException(422, f"Erro ao analisar texto: {str(e)}")
+
+
+# Health check
 @app.get("/")
 def root():
     return {"status": "ok"}
-
-
-# def create_item(file: UploadFile, background_tasks: BackgroundTasks):
-#     background_tasks.add_task(process_file, file)
-#     return {"status": "ok"}

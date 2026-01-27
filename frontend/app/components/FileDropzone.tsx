@@ -18,7 +18,7 @@ export default function FileDropzone({
   return (
     <label
       htmlFor="file-data"
-      className={`group flex flex-col justify-center items-center gap-2 p-10 ${isDragging ? "shadow-[0_0_20px_#00FF88] border-[#00ff88] bg-[#00ff8813]" : "border-[#2e2e2e]"} duration-300 ease-out hover:bg-[#2c2c2c] hover:border-[#009751] border-2 border-dashed rounded-2xl w-full cursor-pointer`}
+      className={`group flex flex-col justify-center items-center gap-2 h-64 ${isDragging ? "shadow-[0_0_20px_#00FF88] border-[#00ff88] bg-[#00ff8813]" : "border-[#2e2e2e]"} duration-300 ease-out hover:bg-[#2c2c2c] hover:border-[#009751] border-2 border-dashed rounded-2xl w-full cursor-pointer`}
       onDragOver={(e) => onDragOver(e)}
       onDrop={(e) => onDrop(e)}
       onDragLeave={(e) => onDragLeave(e)}
