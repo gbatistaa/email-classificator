@@ -13,6 +13,8 @@ import { toast } from "sonner";
 import { AxiosError } from "axios";
 import { DNA } from "react-loader-spinner";
 import EmailClassification from "./components/EmailClassification";
+import EmailAnswerSuggestion from "./components/EmailAnswerSuggestion";
+import { GeminiResponse } from "./interfaces/gemini-response.interface";
 
 export default function Home() {
   const [uploadType, setUploadType] = useState("file");
@@ -20,6 +22,9 @@ export default function Home() {
   const [text, setText] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [geminiResponse, setGeminiResponse] = useState<GeminiResponse | null>(
+    null,
+  );
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -53,19 +58,21 @@ export default function Home() {
 
   const handleAnalyze = async () => {
     setLoading(true);
+    setGeminiResponse(null);
     try {
       if (file) {
         const formData = new FormData();
         formData.append("file", file);
 
         if (file.type === "application/pdf" || file.type === "text/plain") {
-          const response = await api.post("/analyze", formData);
-          console.log(response);
+          const { data } = await api.post("/analyze", formData);
+          console.log(data);
+          setGeminiResponse(data);
         }
 
         toast.success("Análise feita com sucesso!");
       } else if (text) {
-        const data = await api.post("/analyze-text", { text });
+        const { data } = await api.post("/analyze-text", { text });
         console.log(data);
 
         toast.success("Análise feita com sucesso!");
@@ -140,7 +147,14 @@ export default function Home() {
           </div>
         </main>
       </div>
-      <EmailClassification />
+      {geminiResponse && (
+        <>
+          <EmailClassification geminiResponse={geminiResponse} />
+          <EmailAnswerSuggestion
+            geminiAnswer={geminiResponse.answerSuggestion}
+          />
+        </>
+      )}
       <footer className="flex justify-center items-center py-12">
         <p className="text-[#b3b3b3] text-sm">
           MailPrism • Classificação inteligente de emails

@@ -1,7 +1,12 @@
 import { PiChartLineUpBold } from "react-icons/pi";
 import ProgressBar from "./ProgressBar";
+import { GeminiResponse } from "../interfaces/gemini-response.interface";
 
-function EmailClassification() {
+function EmailClassification({
+  geminiResponse,
+}: {
+  geminiResponse: GeminiResponse;
+}) {
   return (
     <article className="flex gap-8 bg-[#171717] mt-12 p-6 rounded-2xl w-2/5 transition-all duration-300 ease-out">
       <div className="flex h-full">
@@ -14,21 +19,21 @@ function EmailClassification() {
         <div className="flex justify-between items-center">
           <h2 className="font-semibold text-lg">Classificação do e-mail</h2>
           <p className="bg-[#00ff88]/20 px-2 py-1 rounded-2xl font-semibold text-[#00ff88] text-xs">
-            Produtivo
+            {geminiResponse?.category}
           </p>
         </div>
         {/* Nível de confiança */}
         <div className="flex justify-between items-center">
           <span className="text-[#b3b3b3] text-sm">Nível de confiança</span>
-          <span className="font-semibold text-[#f2f2f2] text-xs">97.8%</span>
+          <span className="font-semibold text-[#f2f2f2] text-xs">
+            {geminiResponse?.confidence}%
+          </span>
         </div>
-        <ProgressBar value={97.8} colorClass="bg-[#00ff88]" />
-        <p className="text-[#b3b3b3] text-sm">
-          Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-          Necessitatibus asperiores amet laborum, dignissimos est dolorum
-          accusantium possimus excepturi minus soluta omnis aliquid corrupti
-          temporibus autem dolores aspernatur ipsum eaque qui.
-        </p>
+        <ProgressBar
+          value={geminiResponse?.confidence || 0}
+          colorClass="bg-[#00ff88]"
+        />
+        <p className="text-[#b3b3b3] text-sm">{geminiResponse?.reason}</p>
       </div>
     </article>
   );
