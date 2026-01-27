@@ -51,7 +51,6 @@ async def analyze_file(file: UploadFile = File(...)):
             return analyze_email(markdown)
 
         if file.content_type == "text/plain":
-            print("opa um arquivo txt")
             try:
                 plain_text = content.decode("utf-8")
             except UnicodeDecodeError:
