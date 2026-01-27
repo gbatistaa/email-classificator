@@ -12,6 +12,7 @@ import api from "./api/api";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 import { DNA } from "react-loader-spinner";
+import EmailClassification from "./components/EmailClassification";
 
 export default function Home() {
   const [uploadType, setUploadType] = useState("file");
@@ -139,6 +140,12 @@ export default function Home() {
           </div>
         </main>
       </div>
+      <EmailClassification />
+      <footer className="flex justify-center items-center py-12">
+        <p className="text-[#b3b3b3] text-sm">
+          MailPrism • Classificação inteligente de emails
+        </p>
+      </footer>
     </div>
   );
 }
