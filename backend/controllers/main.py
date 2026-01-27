@@ -1,7 +1,11 @@
-from backend.process_pdf.service import process_pdf
+from backend.services.process_pdf_service import process_pdf
 from _operator import concat
 from fastapi import FastAPI, UploadFile, File
 from pathlib import Path
+from dotenv import load_dotenv
+from backend.services.gemini_service import analyze_email
+
+load_dotenv()
 
 app = FastAPI()
 
@@ -15,7 +19,11 @@ async def upload_file(file: UploadFile = File(...)):
     file_path = UPLOAD_DIR / file.filename
 
     if file.content_type == "application/pdf":
-        return process_pdf(file, file_path, content)
+        print("Começo do processamento do PDF")
+        pdf_data = process_pdf(file, file_path, content)
+        print("Fim do processamento do PDF")
+        print("Análise do email pelo Gemini")
+        return analyze_email(pdf_data["file_markdown"])
 
     file_path.write_bytes(content)
     file_info = {
