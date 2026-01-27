@@ -1,0 +1,22 @@
+# Email Classifier API - Test Endpoints
+@baseUrl = http://localhost:8080
+
+GET {{baseUrl}}/
+Accept: application/json
+
+GET {{baseUrl}}/items/42
+Accept: application/json
+
+
+GET {{baseUrl}}/items/42?q=test-query
+Accept: application/json
+
+
+GET {{baseUrl}}/items/100
+Accept: application/json
+
+GET {{baseUrl}}/items/1?q=search-term
+Accept: application/json
+
+GET {{baseUrl}}/items/5?q=
+Accept: application/json
