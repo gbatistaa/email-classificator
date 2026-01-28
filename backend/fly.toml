@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for mailprism on 2026-01-28T18:10:26-03:00
+# fly.toml app configuration file generated for mailprism-restless-tree-5880 on 2026-01-28T19:26:38-03:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'mailprism'
+app = 'mailprism-restless-tree-5880'
 primary_region = 'gru'
 
 [build]
@@ -18,5 +18,6 @@ primary_region = 'gru'
 
 [[vm]]
   memory = '1gb'
+  cpu_kind = 'shared'
   cpus = 1
   memory_mb = 1024
