@@ -4,7 +4,10 @@ from pathlib import Path
 from dotenv import load_dotenv
 from pydantic import BaseModel
 from services.process_pdf_service import process_pdf
-from services.gemini_service import analyze_email
+from services.gemini_service import (
+    analyze_email,
+    refine_answer as refine_answer_service,
+)
 
 load_dotenv()
 
@@ -47,7 +50,7 @@ async def analyze_file(file: UploadFile = File(...)):
         file_path.write_bytes(content)
 
         if file.content_type == "application/pdf":
-            markdown = await process_pdf(file, file_path)
+            markdown = process_pdf(file_path)
             return analyze_email(markdown)
 
         if file.content_type == "text/plain":
@@ -76,6 +79,22 @@ async def analyze_text(request: TextAnalyzeRequest):
         return analyze_email(request.text)
     except Exception as e:
         raise HTTPException(422, f"Erro ao analisar texto: {str(e)}")
+
+
+class RefineAnswerRequest(BaseModel):
+    answer: str
+    refine_type: str
+
+
+@app.post("/refine-answer")
+async def refine_answer(request: RefineAnswerRequest):
+    if not request.answer or len(request.answer.strip()) == 0:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Resposta não enviada")
+
+    try:
+        return refine_answer_service(request.answer, request.refine_type)
+    except Exception as e:
+        raise HTTPException(422, f"Erro ao refinar texto: {str(e)}")
 
 
 # Health check

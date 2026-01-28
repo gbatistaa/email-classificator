@@ -66,17 +66,17 @@ export default function Home() {
 
         if (file.type === "application/pdf" || file.type === "text/plain") {
           const { data } = await api.post("/analyze", formData);
-          console.log(data);
           setGeminiResponse(data);
+        } else {
+          toast.error(
+            `Tipo de arquivo ${file.type.split("/")[1]} não suportado`,
+          );
         }
-
-        toast.success("Análise feita com sucesso!");
       } else if (text) {
         const { data } = await api.post("/analyze-text", { text });
-        console.log(data);
-
-        toast.success("Análise feita com sucesso!");
+        setGeminiResponse(data);
       }
+      toast.success("Análise feita com sucesso!");
     } catch (error) {
       if (error instanceof AxiosError) {
         const detail = error.response?.data?.detail;
