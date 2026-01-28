@@ -13,10 +13,11 @@ Unproductive emails do not require an action or response (e.g. congratulations, 
 Return ONLY a valid JSON object with the following structure:
 
 {
-    "category": "Produtivo" | "Improdutivo" classifique com base no contexto do email se ele é necessário responder ou não respectivamente (produtivo ou improdutivo),
-    "confidence": percentage of accuracy of your the classification must be json float between 0.0 and 100.0,
+    "category": "Produtivo" | "Improdutivo" | {Any of the customCategories in the customCategories parameter} classify the email based on the context of the email if it is necessary to respond or not respectively (productive or unproductive or some custom category, but if the email is productive and fits is some of the custom categories send the custom category that matches the most) is the name of the custom category is too big you can simplify in 2 words first letter of first word in uppercase and the rest in lowercase and the second word in lowercase,
+    "urgency": The percentage of urgency of what the sender is asking for must be a json float between 0.0 and 100.0
     "reason": "detailed explanation in portuguese"
     "answerSuggestion": "A suggestion for an answer to the sent email it have to be in portuguese and profeesional based on the email context"
+    "categoryColor": A hex color code with # in the beginning for the category must be a json string in hex format, must be a color that match with the category and isn't either red or green, if the category is Produtivo or Improdutivo send null
 }
 
 The reason must be written in Portuguese and include:
@@ -49,14 +50,14 @@ def get_client() -> genai.Client:
     return genai.Client(api_key=api_key)
 
 
-def analyze_email(email: str) -> dict:
+def analyze_email(email: str, customCategories: str = "") -> dict:
     client = get_client()
 
     response = client.models.generate_content(
         model="gemini-3-flash-preview",
         contents=email,
         config=types.GenerateContentConfig(
-            system_instruction=ANALYZE_EMAIL_INSTRUCTIONS,
+            system_instruction=ANALYZE_EMAIL_INSTRUCTIONS + customCategories,
             response_mime_type="application/json",
         ),
     )

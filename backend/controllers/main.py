@@ -26,9 +26,9 @@ UPLOAD_DIR = Path("uploads")
 UPLOAD_DIR.mkdir(exist_ok=True)
 
 
-# Análise de arquivo (PDF)
+# Análise de arquivo (PDF e TXT)
 @app.post("/analyze")
-async def analyze_file(file: UploadFile = File(...)):
+async def analyze_file(file: UploadFile = File(...), customCategories: str = ""):
     if not file:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Arquivo não enviado")
 
@@ -51,7 +51,7 @@ async def analyze_file(file: UploadFile = File(...)):
 
         if file.content_type == "application/pdf":
             markdown = process_pdf(file_path)
-            return analyze_email(markdown)
+            return analyze_email(markdown, customCategories)
 
         if file.content_type == "text/plain":
             try:
@@ -59,7 +59,7 @@ async def analyze_file(file: UploadFile = File(...)):
             except UnicodeDecodeError:
                 raise HTTPException(422, "Arquivo TXT não está em UTF-8")
 
-            return analyze_email(plain_text)
+            return analyze_email(plain_text, customCategories)
 
     except Exception as e:
         raise HTTPException(422, f"Erro ao processar PDF: {str(e)}")
