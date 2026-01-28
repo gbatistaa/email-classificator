@@ -7,6 +7,30 @@ function EmailClassification({
 }: {
   geminiResponse: GeminiResponse;
 }) {
+  const isDefaultCategory =
+    geminiResponse.category === "Produtivo" ||
+    geminiResponse.category === "Improdutivo";
+
+  const getCategoryBadgeClasses = () => {
+    if (geminiResponse.category === "Produtivo") {
+      return "bg-[#00ff88]/20 text-[#00ff88]";
+    }
+    if (geminiResponse.category === "Improdutivo") {
+      return "bg-red-500/20 text-red-500";
+    }
+    return "";
+  };
+
+  const getCategoryBadgeStyles = () => {
+    if (!isDefaultCategory && geminiResponse.categoryColor) {
+      return {
+        backgroundColor: `${geminiResponse.categoryColor}33`,
+        color: geminiResponse.categoryColor,
+      };
+    }
+    return {};
+  };
+
   return (
     <article className="flex gap-8 bg-[#171717] mt-12 p-6 rounded-2xl w-2/5 transition-all duration-300 ease-out">
       <div className="flex h-full">
@@ -18,21 +42,23 @@ function EmailClassification({
         {/* Título e classificação */}
         <div className="flex justify-between items-center">
           <h2 className="font-semibold text-lg">Classificação do e-mail</h2>
-          <p className="bg-[#00ff88]/20 px-2 py-1 rounded-2xl font-semibold text-[#00ff88] text-xs">
-            {geminiResponse?.category}
+          <p
+            className={`px-2 py-1 rounded-2xl font-semibold text-xs ${getCategoryBadgeClasses()}`}
+            style={getCategoryBadgeStyles()}
+          >
+            {geminiResponse.category}
           </p>
         </div>
         {/* Nível de confiança */}
         <div className="flex justify-between items-center">
-          <span className="text-[#b3b3b3] text-sm">Nível de confiança</span>
+          <span className="text-[#b3b3b3] text-sm">
+            Nível de urgência de resposta
+          </span>
           <span className="font-semibold text-[#f2f2f2] text-xs">
-            {geminiResponse?.confidence}%
+            {geminiResponse?.urgency}%
           </span>
         </div>
-        <ProgressBar
-          value={geminiResponse?.confidence || 0}
-          colorClass="bg-[#00ff88]"
-        />
+        <ProgressBar value={geminiResponse?.urgency || 0} useColorScale />
         <p className="text-[#b3b3b3] text-sm">{geminiResponse?.reason}</p>
       </div>
     </article>

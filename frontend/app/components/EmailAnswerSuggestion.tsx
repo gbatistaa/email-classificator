@@ -12,6 +12,13 @@ enum RefineTone {
   Longer = "Mais longo",
 }
 
+const refineMessages: Record<RefineTone, string> = {
+  [RefineTone.Formal]: "Formalizando a resposta...",
+  [RefineTone.Informal]: "Deixando mais amigável...",
+  [RefineTone.Shorter]: "Resumindo a resposta...",
+  [RefineTone.Longer]: "Expandindo a resposta...",
+};
+
 interface RefineAnswerResponse {
   refinedAnswer: string;
 }
@@ -19,15 +26,21 @@ interface RefineAnswerResponse {
 function EmailAnswerSuggestion({ geminiAnswer }: { geminiAnswer: string }) {
   const [answer, setAnswer] = useState(geminiAnswer);
   const [loading, setLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("");
 
   const handleCopy = () => {
     navigator.clipboard.writeText(answer);
     toast.success("Resposta copiada com sucesso!");
   };
 
-  const handleRefineTone = async (tone: RefineTone) => {
+  const handleRefineTone = async (
+    tone: RefineTone,
+    displayTone: RefineTone,
+  ) => {
     try {
       setLoading(true);
+      setLoadingMessage(refineMessages[displayTone]);
+
       const refineAnswerRequest = {
         answer,
         refine_type: tone,
@@ -37,9 +50,9 @@ function EmailAnswerSuggestion({ geminiAnswer }: { geminiAnswer: string }) {
         "/refine-answer",
         refineAnswerRequest,
       );
-      console.log(data);
 
       setAnswer(data.refinedAnswer);
+      toast.success("Resposta refinada com sucesso!");
     } catch (error) {
       if (error instanceof AxiosError) {
         const detail = error.response?.data?.detail;
@@ -49,6 +62,7 @@ function EmailAnswerSuggestion({ geminiAnswer }: { geminiAnswer: string }) {
       }
     } finally {
       setLoading(false);
+      setLoadingMessage("");
     }
   };
 
@@ -61,25 +75,50 @@ function EmailAnswerSuggestion({ geminiAnswer }: { geminiAnswer: string }) {
       </div>
       <div className="flex flex-col gap-5 w-full">
         {/* Título e classificação */}
-        <div className="flex flex-col">
-          <h2 className="font-semibold text-lg">Sugestão de resposta</h2>
-          <span className="text-[#b3b3b3] text-xs">
-            Edite conforme sua necessidade
-          </span>
+        <div className="flex justify-between items-center">
+          <div className="flex flex-col">
+            <h2 className="font-semibold text-lg">Sugestão de resposta</h2>
+            <span className="text-[#b3b3b3] text-xs">
+              Edite conforme sua necessidade
+            </span>
+          </div>
+
+          {/* Badge de loading */}
+          {loading && (
+            <div className="flex items-center gap-2 bg-[#00ff88]/10 px-3 py-1.5 rounded-full animate-pulse">
+              <div className="bg-[#00ff88] rounded-full w-2 h-2 animate-ping" />
+              <span className="font-medium text-white text-xs">
+                {loadingMessage}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Área de texto para a sugestão de resposta */}
-        <div className="flex flex-col gap-2">
+        <div className="relative flex flex-col gap-2">
           <textarea
-            className="bg-[#242424] focus:shadow-[0_0_20px_#00ff8833] p-4 border border-[#2e2e2e] focus:border-[#00ff88] rounded-2xl focus:outline-none w-full h-64 text-[#f2f2f2] text-sm duration-300 ease-out resize-none"
+            className={`p-4 border rounded-2xl focus:outline-none w-full h-64 text-sm duration-300 ease-out resize-none
+              ${
+                loading
+                  ? "bg-[#1a1a1a] border-[#2e2e2e] text-[#666666] cursor-not-allowed"
+                  : "bg-[#242424] border-[#2e2e2e] focus:border-[#00ff88] focus:shadow-[0_0_20px_#00ff8833] text-[#f2f2f2]"
+              }`}
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
+            readOnly={loading}
           />
         </div>
+
         <div className="flex gap-4">
           <button
-            className="flex justify-center items-center gap-2 bg-[#00ff88] hover:shadow-[0_0_20px_#00ff88d8] px-4 py-2 rounded-lg w-fit text-[#000a02] duration-300 ease-in-out cursor-pointer"
+            className={`flex justify-center items-center gap-2 px-4 py-2 rounded-lg w-fit duration-300 ease-in-out
+              ${
+                loading
+                  ? "bg-[#00ff88]/30 text-[#000a02]/50 cursor-not-allowed"
+                  : "bg-[#00ff88] hover:shadow-[0_0_20px_#00ff88d8] text-[#000a02] cursor-pointer"
+              }`}
             onClick={handleCopy}
+            disabled={loading}
           >
             <BiCopy />
             <span>Copiar</span>
@@ -90,12 +129,19 @@ function EmailAnswerSuggestion({ geminiAnswer }: { geminiAnswer: string }) {
             {Object.values(RefineTone).map((tone) => (
               <button
                 key={tone}
-                className="flex justify-center items-center gap-2 px-4 py-2 border border-[#2e2e2e] hover:border-[#00ff88] rounded-lg w-fit text-[#f2f2f2] hover:text-[#00ff88] text-xs text-nowrap duration-300 ease-in-out cursor-pointer"
+                className={`flex justify-center items-center gap-2 px-4 py-2 border rounded-lg w-fit text-xs text-nowrap duration-300 ease-in-out
+                  ${
+                    loading
+                      ? "border-[#2e2e2e] text-[#666666] cursor-not-allowed"
+                      : "border-[#2e2e2e] hover:border-[#00ff88] text-[#f2f2f2] hover:text-[#00ff88] cursor-pointer"
+                  }`}
                 onClick={() =>
                   handleRefineTone(
                     (tone as string).toLocaleLowerCase() as RefineTone,
+                    tone as RefineTone,
                   )
                 }
+                disabled={loading}
               >
                 <span>{tone}</span>
               </button>

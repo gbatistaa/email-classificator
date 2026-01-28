@@ -15,6 +15,8 @@ import { DNA } from "react-loader-spinner";
 import EmailClassification from "./components/EmailClassification";
 import EmailAnswerSuggestion from "./components/EmailAnswerSuggestion";
 import { GeminiResponse } from "./interfaces/gemini-response.interface";
+import { CustomCategory } from "./interfaces/custom-category.interface";
+import CustomCategoriesSection from "./components/CustomCategoriesSection";
 
 export default function Home() {
   const [uploadType, setUploadType] = useState("file");
@@ -24,6 +26,10 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [geminiResponse, setGeminiResponse] = useState<GeminiResponse | null>(
     null,
+  );
+  const [customCategoriesOpen, setCustomCategoriesOpen] = useState(false);
+  const [customCategories, setCustomCategories] = useState<CustomCategory[]>(
+    [],
   );
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,10 +69,16 @@ export default function Home() {
       if (file) {
         const formData = new FormData();
         formData.append("file", file);
+        formData.append("customCategories", JSON.stringify(customCategories));
 
-        if (file.type === "application/pdf" || file.type === "text/plain") {
+        if (
+          (file.type === "application/pdf" || file.type === "text/plain") &&
+          uploadType === "file"
+        ) {
           const { data } = await api.post("/analyze", formData);
+          console.log(data);
           setGeminiResponse(data);
+          toast.success("Análise feita com sucesso!");
         } else {
           toast.error(
             `Tipo de arquivo ${file.type.split("/")[1]} não suportado`,
@@ -75,8 +87,8 @@ export default function Home() {
       } else if (text) {
         const { data } = await api.post("/analyze-text", { text });
         setGeminiResponse(data);
+        toast.success("Análise feita com sucesso!");
       }
-      toast.success("Análise feita com sucesso!");
     } catch (error) {
       if (error instanceof AxiosError) {
         const detail = error.response?.data?.detail;
@@ -87,6 +99,10 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleAddCustomCategory = () => {
+    setCustomCategories([...customCategories, { name: "", description: "" }]);
   };
 
   return (
@@ -119,8 +135,22 @@ export default function Home() {
               onTextChange={(e) => setText(e.target.value)}
             />
           )}
-          {/* Drop down customizado react-select de categorias personalizadas */}
-          <div></div>
+          <CustomCategoriesSection
+            isOpen={customCategoriesOpen}
+            onToggle={() => setCustomCategoriesOpen(!customCategoriesOpen)}
+            categories={customCategories}
+            onAddCategory={handleAddCustomCategory}
+            onUpdateCategory={(index, category) => {
+              const newCategories = [...customCategories];
+              newCategories[index] = category;
+              setCustomCategories(newCategories);
+            }}
+            onRemoveCategory={(index) => {
+              const newCategories = [...customCategories];
+              newCategories.splice(index, 1);
+              setCustomCategories(newCategories);
+            }}
+          />
 
           {/* Botão para enviar o arquivo para análise */}
           <div>

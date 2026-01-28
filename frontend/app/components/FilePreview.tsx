@@ -1,4 +1,5 @@
 import { IoRemoveCircleOutline } from "react-icons/io5";
+import { formatBytes } from "../utils/formatBytes";
 
 interface FilePreviewProps {
   file: File;
@@ -11,7 +12,7 @@ export default function FilePreview({ file, onRemove }: FilePreviewProps) {
       <div className="flex justify-between items-center">
         <div>
           <p className="text-[#f2f2f2]">{file.name}</p>
-          <p className="text-[#b3b3b3] text-xs">{file.size} bytes</p>
+          <p className="text-[#b3b3b3] text-xs">{formatBytes(file.size)}</p>
         </div>
         <button
           type="button"

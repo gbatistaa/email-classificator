@@ -1,6 +1,7 @@
 export interface GeminiResponse {
   category: string;
-  confidence: number;
+  urgency: number;
   reason: string;
   answerSuggestion: string;
+  categoryColor: string;
 }
