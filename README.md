@@ -2,9 +2,9 @@
 
 # ✨ MailPrism ✨
 
-**Classificação inteligente de e-mails usando IA**
+**Intelligent email classification using AI**
 
-*Transforme caos em clareza — organize seus e-mails com o poder da Inteligência Artificial*
+_Turn chaos into clarity — organize your emails with the power of Artificial Intelligence_
 
 ---
 
@@ -21,317 +21,334 @@
 
 ---
 
-## 📋 Índice
+## 📋 Table of Contents
 
 - [✨ MailPrism ✨](#-mailprism-)
-  - [📋 Índice](#-índice)
-  - [🚀 Sobre o Projeto](#-sobre-o-projeto)
-    - [O que é um e-mail Produtivo?](#o-que-é-um-e-mail-produtivo)
-    - [O que é um e-mail Improdutivo?](#o-que-é-um-e-mail-improdutivo)
-  - [✨ Funcionalidades](#-funcionalidades)
-  - [🛠️ Tecnologias Utilizadas](#️-tecnologias-utilizadas)
+  - [📋 Table of Contents](#-table-of-contents)
+  - [🚀 About the Project](#-about-the-project)
+    - [What is a Productive email?](#what-is-a-productive-email)
+    - [What is an Unproductive email?](#what-is-an-unproductive-email)
+  - [✨ Features](#-features)
+  - [🛠️ Technologies Used](#️-technologies-used)
     - [Backend](#backend)
     - [Frontend](#frontend)
-  - [🔄 Arquitetura e Fluxo de Funcionamento](#-arquitetura-e-fluxo-de-funcionamento)
-    - [Fluxo Detalhado](#fluxo-detalhado)
-  - [💻 Como Executar Localmente](#-como-executar-localmente)
-    - [Pré-requisitos](#pré-requisitos)
+  - [🔄 Architecture and Workflow](#-architecture-and-workflow)
+    - [Detailed Flow](#detailed-flow)
+  - [💻 How to Run Locally](#-how-to-run-locally)
+    - [Prerequisites](#prerequisites)
     - [Backend (Python/FastAPI)](#backend-pythonfastapi)
     - [Frontend (Next.js)](#frontend-nextjs)
-  - [🔐 Variáveis de Ambiente](#-variáveis-de-ambiente)
+  - [🔐 Environment Variables](#-environment-variables)
     - [Backend (`.env`)](#backend-env)
     - [Frontend (`.env.development`)](#frontend-envdevelopment)
-  - [🏢 Benefícios para Empresas e Usuários](#-benefícios-para-empresas-e-usuários)
-    - [Para Empresas](#para-empresas)
-    - [Para Usuários Individuais](#para-usuários-individuais)
+  - [🏢 Benefits for Companies and Users](#-benefits-for-companies-and-users)
+    - [For Companies](#for-companies)
+    - [For Individual Users](#for-individual-users)
   - [📡 API Endpoints](#-api-endpoints)
     - [`POST /analyze`](#post-analyze)
     - [`POST /analyze-text`](#post-analyze-text)
     - [`POST /refine-answer`](#post-refine-answer)
     - [`GET /`](#get-)
-  - [🌟 Contribuições](#-contribuições)
+  - [🌟 Contributions](#-contributions)
 
 ---
 
-## 🚀 Sobre o Projeto
+## 🚀 About the Project
 
-O **MailPrism** é uma aplicação inteligente de classificação de e-mails que utiliza o poder da **Google Gemini AI** para analisar e categorizar automaticamente seus e-mails em **Produtivos** ou **Improdutivos**.
+**MailPrism** is an intelligent email classification application that uses the power of **Google Gemini AI** to automatically analyze and categorize your emails into **Productive** or **Unproductive**.
 
-### O que é um e-mail Produtivo?
-E-mails que requerem uma ação ou resposta, como:
-- Solicitações de suporte
-- Atualizações sobre casos abertos
-- Perguntas e questionamentos
+### What is a Productive email?
 
-### O que é um e-mail Improdutivo?
-E-mails que **não** requerem uma ação ou resposta, como:
-- Congratulações
-- Agradecimentos simples
-- Newsletters informativas
+Emails that require an action or response, such as:
 
-Além da classificação, o MailPrism oferece:
-- 📊 **Nível de urgência** (0-100%)
-- 📝 **Análise detalhada** do contexto e intenção do remetente
-- 💡 **Sugestões de resposta** profissionais geradas automaticamente
-- 🎨 **Categorias personalizadas** definidas pelo usuário
+- Support requests
+- Updates on open cases
+- Questions and inquiries
 
----
+### What is an Unproductive email?
 
-## ✨ Funcionalidades
+Emails that **do not** require an action or response, such as:
 
-| Funcionalidade | Descrição |
-|----------------|-----------|
-| 📄 **Upload de PDF** | Faça upload de e-mails em formato PDF para análise |
-| 📝 **Upload de TXT** | Suporte para arquivos de texto simples |
-| ⌨️ **Entrada de Texto** | Cole o conteúdo do e-mail diretamente na interface |
-| 🏷️ **Categorização Automática** | Classificação em Produtivo/Improdutivo ou categorias customizadas |
-| ⚡ **Indicador de Urgência** | Porcentagem de urgência baseada no conteúdo |
-| 💬 **Sugestão de Resposta** | Resposta profissional sugerida pela IA |
-| ✏️ **Refinamento de Resposta** | Ajuste o tom da resposta (formal, casual, etc.) |
-| 🎨 **Cores Personalizadas** | Cores automáticas para categorias customizadas |
+- Congratulations
+- Simple thank-you notes
+- Informational newsletters
+
+In addition to classification, MailPrism offers:
+
+- 📊 **Urgency level** (0-100%)
+- 📝 **Detailed analysis** of the context and sender's intention
+- 💡 **Response suggestions** professionally generated automatically
+- 🎨 **Custom categories** defined by the user
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## ✨ Features
+
+| Feature                         | Description                                                 |
+| ------------------------------- | ----------------------------------------------------------- |
+| 📄 **PDF Upload**               | Upload emails in PDF format for analysis                    |
+| 📝 **TXT Upload**               | Support for plain text files                                |
+| ⌨️ **Text Input**               | Paste email content directly into the interface             |
+| 🏷️ **Automatic Categorization** | Classification as Productive/Unproductive or custom categories |
+| ⚡ **Urgency Indicator**        | Urgency percentage based on content                         |
+| 💬 **Response Suggestion**      | Professional response suggested by AI                       |
+| ✏️ **Response Refinement**      | Adjust the response tone (formal, casual, etc.)             |
+| 🎨 **Custom Colors**            | Automatic colors for custom categories                      |
+
+---
+
+## 🛠️ Technologies Used
 
 ### Backend
 
-| Tecnologia | Uso |
-|------------|-----|
-| **Python 3.x** | Linguagem principal do backend |
-| **FastAPI** | Framework web de alta performance para APIs |
-| **Uvicorn** | Servidor ASGI para rodar a aplicação |
-| **Docling** | Conversão de documentos PDF para Markdown |
-| **Google Gemini API** | Motor de IA para análise e classificação |
-| **Pydantic** | Validação de dados e schemas |
+| Technology            | Use                                          |
+| --------------------- | -------------------------------------------- |
+| **Python 3.x**        | Main backend language                        |
+| **FastAPI**           | High-performance web framework for APIs      |
+| **Uvicorn**           | ASGI server to run the application           |
+| **Docling**           | PDF document conversion to Markdown          |
+| **Google Gemini API** | AI engine for analysis and classification   |
+| **Pydantic**          | Data validation and schemas                  |
 
 ### Frontend
 
-| Tecnologia | Uso |
-|------------|-----|
-| **React 19** | Biblioteca para construção de interfaces |
-| **Next.js 16** | Framework React com SSR e roteamento |
-| **TypeScript** | Tipagem estática para JavaScript |
-| **Tailwind CSS 4** | Framework CSS utilitário |
-| **Axios** | Cliente HTTP para requisições à API |
-| **Sonner** | Notificações toast elegantes |
-| **React Icons** | Ícones para a interface |
+| Technology         | Use                                      |
+| ------------------ | ---------------------------------------- |
+| **React 19**       | Library for building interfaces          |
+| **Next.js 16**     | React framework with SSR and routing     |
+| **TypeScript**     | Static typing for JavaScript             |
+| **Tailwind CSS 4** | Utility-first CSS framework              |
+| **Axios**          | HTTP client for API requests             |
+| **Sonner**         | Elegant toast notifications              |
+| **React Icons**    | Icons for the interface                  |
 
 ---
 
-## 🔄 Arquitetura e Fluxo de Funcionamento
+## 🔄 Architecture and Workflow
 
-```
+```bash
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                              MAILPRISM FLOW                                 │
 └─────────────────────────────────────────────────────────────────────────────┘
 
     ┌─────────────┐         ┌─────────────┐         ┌─────────────────────┐
-    │   USUÁRIO   │────────▶│   NEXT.JS   │────────▶│   FASTAPI BACKEND   │
+    │    USER     │────────▶│   NEXT.JS   │────────▶│   FASTAPI BACKEND   │
     │             │         │  FRONTEND   │  Axios  │                     │
     └─────────────┘         └─────────────┘         └──────────┬──────────┘
           │                                                     │
           │   Upload PDF/TXT                                    │
-          │   ou texto                                          │
+          │   or text                                           │
           ▼                                                     ▼
     ┌─────────────┐                                    ┌─────────────────┐
-    │   Arquivo   │                                    │     DOCLING     │
+    │    File     │                                    │     DOCLING     │
     │  PDF / TXT  │                                    │  (PDF → MD)     │
     └─────────────┘                                    └────────┬────────┘
                                                                 │
                                                                 ▼
                                                        ┌─────────────────┐
                                                        │   GEMINI API    │
-                                                       │   (Análise IA)  │
+                                                       │  (AI Analysis)  │
                                                        └────────┬────────┘
                                                                 │
                                                                 ▼
     ┌─────────────────────────────────────────────────────────────────────┐
-    │                         RESPOSTA JSON                               │
-    │  • category: "Produtivo" | "Improdutivo" | Custom                   │
+    │                         JSON RESPONSE                               │
+    │  • category: "Productive" | "Unproductive" | Custom                 │
     │  • urgency: 0.0 - 100.0                                             │
-    │  • reason: Análise detalhada em português                           │
-    │  • answerSuggestion: Sugestão de resposta profissional              │
-    │  • categoryColor: Cor hex para categorias customizadas              │
+    │  • reason: Detailed analysis                                        │
+    │  • answerSuggestion: Professional response suggestion               │
+    │  • categoryColor: Hex color for custom categories                   │
     └─────────────────────────────────────────────────────────────────────┘
 ```
 
-### Fluxo Detalhado
+### Detailed Flow
 
-1. **Entrada do Usuário**
-   - O usuário faz upload de um arquivo PDF/TXT ou cola o texto do e-mail diretamente
-   - Opcionalmente, define categorias personalizadas com nome e descrição
+1. **User Input**
+   - The user uploads a PDF/TXT file or pastes email text directly
+   - Optionally, defines custom categories with name and description
 
-2. **Processamento no Frontend (Next.js)**
-   - A interface captura o arquivo ou texto
-   - Cria um `FormData` com o arquivo e categorias personalizadas
-   - Envia via Axios para o backend FastAPI
+2. **Frontend Processing (Next.js)**
+   - The interface captures the file or text
+   - Creates a `FormData` with the file and custom categories
+   - Sends via Axios to the FastAPI backend
 
-3. **Processamento no Backend (FastAPI)**
-   - **Para PDFs**: O Docling converte o documento para Markdown
-   - **Para TXT**: O conteúdo é lido diretamente como UTF-8
-   - O texto processado é enviado para a API do Gemini
+3. **Backend Processing (FastAPI)**
+   - **For PDFs**: Docling converts the document to Markdown
+   - **For TXT**: Content is read directly as UTF-8
+   - The processed text is sent to the Gemini API
 
-4. **Análise pela IA (Google Gemini)**
-   - A Gemini analisa o conteúdo do e-mail
-   - Classifica em Produtivo/Improdutivo ou categoria customizada
-   - Calcula o nível de urgência
-   - Gera uma análise detalhada e sugestão de resposta
+4. **AI Analysis (Google Gemini)**
+   - Gemini analyzes the email content
+   - Classifies as Productive/Unproductive or custom category
+   - Calculates the urgency level
+   - Generates a detailed analysis and response suggestion
 
-5. **Resposta ao Usuário**
-   - O frontend exibe a classificação com indicador visual
-   - Mostra a barra de urgência
-   - Apresenta a análise detalhada e sugestão de resposta
+5. **Response to User**
+   - The frontend displays the classification with visual indicator
+   - Shows the urgency bar
+   - Presents the detailed analysis and response suggestion
 
 ---
 
-## 💻 Como Executar Localmente
+## 💻 How to Run Locally
 
-### Pré-requisitos
+### Prerequisites
 
-- **Python 3.10+** instalado
-- **Node.js 18+** instalado
-- **npm** ou **yarn**
-- Uma **chave de API do Google Gemini** ([Obter aqui](https://aistudio.google.com/app/apikey))
+- **Python 3.10+** installed
+- **Node.js 18+** installed
+- **npm** or **yarn**
+- A **Google Gemini API key** ([Get one here](https://aistudio.google.com/app/apikey))
 
 ---
 
 ### Backend (Python/FastAPI)
 
-1. **Navegue até a pasta do backend**
+1. **Navigate to the backend folder**
+
    ```bash
    cd backend
    ```
 
-2. **Crie e ative o ambiente virtual**
+2. **Create and activate the virtual environment**
+
    ```bash
-   # Criar o ambiente virtual
+   # Create the virtual environment
    python -m venv .venv
 
-   # Ativar no Linux/macOS
+   # Activate on Linux/macOS
    source .venv/bin/activate
 
-   # Ativar no Windows (PowerShell)
+   # Activate on Windows (PowerShell)
    .\.venv\Scripts\Activate.ps1
 
-   # Ativar no Windows (CMD)
+   # Activate on Windows (CMD)
    .\.venv\Scripts\activate.bat
    ```
 
-3. **Instale as dependências**
+3. **Install dependencies**
+
    ```bash
    pip install -r requirements.txt
    ```
 
-4. **Configure as variáveis de ambiente**
+4. **Configure environment variables**
+
    ```bash
-   # Crie o arquivo .env
+   # Create the .env file
    cp .env.example .env
 
-   # Edite o arquivo e adicione sua chave do Gemini
-   # GEMINI_API_KEY=sua_chave_aqui
+   # Edit the file and add your Gemini key
+   # GEMINI_API_KEY=your_key_here
    ```
 
-5. **Execute o servidor**
+5. **Run the server**
+
    ```bash
    uvicorn controllers.main:app --reload
    ```
 
-   O backend estará disponível em: `http://localhost:8000`
+   The backend will be available at: `http://localhost:8000`
 
 ---
 
 ### Frontend (Next.js)
 
-1. **Navegue até a pasta do frontend**
+1. **Navigate to the frontend folder**
+
    ```bash
    cd frontend
    ```
 
-2. **Instale as dependências**
+2. **Install dependencies**
+
    ```bash
    npm install
-   # ou
+   # or
    yarn install
    ```
 
-3. **Configure as variáveis de ambiente**
+3. **Configure environment variables**
+
    ```bash
-   # Verifique o arquivo .env.development
-   # Deve conter:
+   # Check the .env.development file
+   # It should contain:
    # NEXT_PUBLIC_API_URL=http://localhost:8000
    ```
 
-4. **Execute o servidor de desenvolvimento**
+4. **Run the development server**
+
    ```bash
    npm run dev
-   # ou
+   # or
    yarn dev
    ```
 
-   O frontend estará disponível em: `http://localhost:3000`
+   The frontend will be available at: `http://localhost:3000`
 
 ---
 
-## 🔐 Variáveis de Ambiente
+## 🔐 Environment Variables
 
 ### Backend (`.env`)
 
-| Variável | Descrição | Obrigatório |
-|----------|-----------|-------------|
-| `GEMINI_API_KEY` | Chave de API do Google Gemini | ✅ Sim |
+| Variable         | Description                  | Required  |
+| ---------------- | ---------------------------- | --------- |
+| `GEMINI_API_KEY` | Google Gemini API key        | ✅ Yes    |
 
 ### Frontend (`.env.development`)
 
-| Variável | Descrição | Obrigatório |
-|----------|-----------|-------------|
-| `NEXT_PUBLIC_API_URL` | URL do backend FastAPI | ✅ Sim |
+| Variable              | Description               | Required  |
+| --------------------- | ------------------------- | --------- |
+| `NEXT_PUBLIC_API_URL` | FastAPI backend URL       | ✅ Yes    |
 
 ---
 
-## 🏢 Benefícios para Empresas e Usuários
+## 🏢 Benefits for Companies and Users
 
-### Para Empresas
+### For Companies
 
-| Benefício | Impacto |
-|-----------|---------|
-| ⏱️ **Economia de Tempo** | Reduza em até 70% o tempo gasto triando e-mails |
-| 📊 **Priorização Automática** | Foque no que realmente importa com indicadores de urgência |
-| 🤖 **Respostas Padronizadas** | Mantenha consistência nas comunicações com sugestões de IA |
-| 📈 **Produtividade** | Equipes mais eficientes com menos e-mails improdutivos |
-| 🎯 **Categorização Personalizada** | Adapte às necessidades específicas do seu negócio |
+| Benefit                        | Impact                                                     |
+| ------------------------------ | ---------------------------------------------------------- |
+| ⏱️ **Time Savings**            | Reduce email sorting time by up to 70%                     |
+| 📊 **Automatic Prioritization** | Focus on what really matters with urgency indicators       |
+| 🤖 **Standardized Responses**  | Maintain consistency in communications with AI suggestions |
+| 📈 **Productivity**            | More efficient teams with fewer unproductive emails        |
+| 🎯 **Custom Categorization**   | Adapt to your business-specific needs                      |
 
-### Para Usuários Individuais
+### For Individual Users
 
-| Benefício | Impacto |
-|-----------|---------|
-| 🧘 **Menos Sobrecarga** | Saiba instantaneamente quais e-mails precisam de atenção |
-| 💡 **Respostas Rápidas** | Use sugestões de resposta para agilizar sua comunicação |
-| 🎨 **Interface Intuitiva** | Experiência de usuário moderna e agradável |
-| 📱 **Flexibilidade** | Analise PDF, TXT ou texto simples |
+| Benefit                    | Impact                                                     |
+| -------------------------- | ---------------------------------------------------------- |
+| 🧘 **Less Overload**       | Instantly know which emails need attention                 |
+| 💡 **Quick Responses**     | Use response suggestions to speed up your communication    |
+| 🎨 **Intuitive Interface** | Modern and pleasant user experience                        |
+| 📱 **Flexibility**         | Analyze PDF, TXT, or plain text                            |
 
 ---
 
 ## 📡 API Endpoints
 
 ### `POST /analyze`
-Analisa um arquivo PDF ou TXT.
+
+Analyzes a PDF or TXT file.
 
 **Request:**
-```
+
+```bash
 Content-Type: multipart/form-data
 
-file: <arquivo PDF ou TXT>
-customCategories: <JSON string com categorias personalizadas>
+file: <PDF or TXT file>
+customCategories: <JSON string with custom categories>
 ```
 
 **Response:**
+
 ```json
 {
-  "category": "Produtivo",
+  "category": "Productive",
   "urgency": 75.5,
-  "reason": "Análise detalhada do e-mail...",
-  "answerSuggestion": "Prezado(a), agradeço pelo contato...",
+  "reason": "Detailed email analysis...",
+  "answerSuggestion": "Dear Sir/Madam, thank you for reaching out...",
   "categoryColor": null
 }
 ```
@@ -339,54 +356,60 @@ customCategories: <JSON string com categorias personalizadas>
 ---
 
 ### `POST /analyze-text`
-Analisa texto puro.
+
+Analyzes plain text.
 
 **Request:**
+
 ```json
 {
-  "text": "Conteúdo do e-mail para análise..."
+  "text": "Email content for analysis..."
 }
 ```
 
-**Response:** Mesmo formato do endpoint `/analyze`
+**Response:** Same format as the `/analyze` endpoint
 
 ---
 
 ### `POST /refine-answer`
-Refina uma sugestão de resposta.
+
+Refines a response suggestion.
 
 **Request:**
+
 ```json
 {
-  "answer": "Texto da resposta atual",
-  "refine_type": "formal | casual | empático"
+  "answer": "Current response text",
+  "refine_type": "formal | casual | empathetic"
 }
 ```
 
 **Response:**
+
 ```json
 {
-  "refinedAnswer": "Resposta refinada..."
+  "refinedAnswer": "Refined response..."
 }
 ```
 
 ---
 
 ### `GET /`
-Health check do servidor (retorna ASCII art 😺).
+
+Server health check (returns ASCII art 😺).
 
 ---
 
 <div align="center">
 
-## 🌟 Contribuições
+## 🌟 Contributions
 
-Contribuições são bem-vindas! Sinta-se à vontade para abrir issues e pull requests.
+Contributions are welcome! Feel free to open issues and pull requests.
 
 ---
 
-**Feito com 💚 e ☕ por desenvolvedores apaixonados**
+**Made with ☕ by myself**
 
-*MailPrism • Classificação inteligente de emails*
+_MailPrism • Intelligent email classification_
 
 </div>
