@@ -66,25 +66,33 @@ export default function Home() {
     setLoading(true);
     setGeminiResponse(null);
     try {
-      if (file) {
+      if (uploadType === "file") {
+        if (!file) {
+          toast.error("Campo de arquivo vazio!");
+          return;
+        }
+
+        if (!["application/pdf", "text/plain"].includes(file.type)) {
+          toast.error(
+            `Tipo de arquivo não suportado: ${file.type.split("/")[1]}`,
+          );
+          return;
+        }
+
         const formData = new FormData();
         formData.append("file", file);
         formData.append("customCategories", JSON.stringify(customCategories));
 
-        if (
-          (file.type === "application/pdf" || file.type === "text/plain") &&
-          uploadType === "file"
-        ) {
-          const { data } = await api.post("/analyze", formData);
-          console.log(data);
-          setGeminiResponse(data);
-          toast.success("Análise feita com sucesso!");
-        } else {
-          toast.error(
-            `Tipo de arquivo ${file.type.split("/")[1]} não suportado`,
-          );
+        const { data } = await api.post("/analyze", formData);
+        console.log(data);
+        setGeminiResponse(data);
+        toast.success("Análise feita com sucesso!");
+      } else {
+        if (text.length === 0 || !text) {
+          toast.error("Não é possível analisar texto vazio!");
+          return;
         }
-      } else if (text) {
+
         const { data } = await api.post("/analyze-text", { text });
         setGeminiResponse(data);
         toast.success("Análise feita com sucesso!");
