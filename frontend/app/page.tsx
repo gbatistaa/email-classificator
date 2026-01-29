@@ -17,6 +17,7 @@ import EmailAnswerSuggestion from "./components/EmailAnswerSuggestion";
 import { GeminiResponse } from "./interfaces/gemini-response.interface";
 import { CustomCategory } from "./interfaces/custom-category.interface";
 import CustomCategoriesSection from "./components/CustomCategoriesSection";
+import { formatBytes } from "./utils/formatBytes";
 
 export default function Home() {
   const [uploadType, setUploadType] = useState("file");
@@ -35,6 +36,22 @@ export default function Home() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
+      // Check file type
+      if (!["application/pdf", "text/plain"].includes(selectedFile.type)) {
+        toast.error(
+          `Tipo de arquivo não suportado: ${selectedFile.type.split("/")[1]}`,
+        );
+        return;
+      }
+
+      // 10MB
+      if (selectedFile.size > 1024 * 1024 * 10) {
+        toast.error(
+          `Arquivo muito grande (${formatBytes(selectedFile.size)})! O tamanho máximo é de 10MB.`,
+        );
+        return;
+      }
+
       setFile(selectedFile);
     }
   };
@@ -54,6 +71,22 @@ export default function Home() {
     setIsDragging(false);
     const selectedFile = e.dataTransfer.files[0];
     if (selectedFile) {
+      // Check file type
+      if (!["application/pdf", "text/plain"].includes(selectedFile.type)) {
+        toast.error(
+          `Tipo de arquivo não suportado: ${selectedFile.type.split("/")[1]}`,
+        );
+        return;
+      }
+
+      // 10MB
+      if (selectedFile.size > 1024 * 1024 * 10) {
+        toast.error(
+          `Arquivo muito grande ${formatBytes(selectedFile.size)}! O tamanho máximo é de 10MB.`,
+        );
+        return;
+      }
+
       setFile(selectedFile);
     }
   };
@@ -63,27 +96,30 @@ export default function Home() {
     setGeminiResponse(null);
     try {
       if (uploadType === "file") {
+        // Check if file is empty
         if (!file) {
           toast.error("Campo de arquivo vazio!");
           return;
         }
 
-        console.log("Arquivo existe");
-        if (!["application/pdf", "text/plain"].includes(file.type)) {
-          toast.error(
-            `Tipo de arquivo não suportado: ${file.type.split("/")[1]}`,
+        // Check if custom categories are filled
+        if (customCategories.length > 0) {
+          const hasEmptyCategory = customCategories.some(
+            (category) => category.name.trim().length === 0,
           );
-          console.log("Arquivo inválido");
-          return;
+          if (hasEmptyCategory) {
+            toast.error("Preencha todas as categorias personalizadas!");
+            return;
+          }
         }
-        console.log("Arquivo válido");
+
         const formData = new FormData();
         formData.append("file", file);
         formData.append("customCategories", JSON.stringify(customCategories));
-        console.log("Form data criado");
+
         const { data } = await api.post("/analyze", formData);
-        console.log("Resposta do backend: ", data);
         setGeminiResponse(data);
+
         toast.success("Análise feita com sucesso!");
       } else {
         if (text.length === 0 || !text) {
