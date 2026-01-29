@@ -82,6 +82,7 @@ async def analyze_file(file: UploadFile = File(...), customCategories: str = "")
 # Análise de texto
 class TextAnalyzeRequest(BaseModel):
     text: str
+    customCategories: str
 
 
 @app.post("/analyze-text")
@@ -90,7 +91,7 @@ async def analyze_text(request: TextAnalyzeRequest):
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Texto não enviado")
 
     try:
-        return analyze_email(request.text)
+        return analyze_email(request.text, request.customCategories)
     except Exception as e:
         raise HTTPException(422, f"Erro ao analisar texto: {str(e)}")
 

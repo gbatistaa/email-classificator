@@ -101,22 +101,20 @@ export default function Home() {
     setLoading(true);
     setGeminiResponse(null);
     try {
+      if (customCategories.length > 0) {
+        const hasEmptyCategory = customCategories.some(
+          (category) => category.name.trim().length === 0,
+        );
+        if (hasEmptyCategory) {
+          toast.error("Preencha todas as categorias personalizadas!");
+          return;
+        }
+      }
+
       if (uploadType === "file") {
-        // Check if file is empty
         if (!file) {
           toast.error("Campo de arquivo vazio!");
           return;
-        }
-
-        // Check if custom categories are filled
-        if (customCategories.length > 0) {
-          const hasEmptyCategory = customCategories.some(
-            (category) => category.name.trim().length === 0,
-          );
-          if (hasEmptyCategory) {
-            toast.error("Preencha todas as categorias personalizadas!");
-            return;
-          }
         }
 
         const formData = new FormData();
@@ -133,13 +131,17 @@ export default function Home() {
           return;
         }
 
-        const { data } = await api.post("/analyze-text", { text });
+        const { data } = await api.post("/analyze-text", {
+          text,
+          customCategories: JSON.stringify(customCategories),
+        });
         setGeminiResponse(data);
         toast.success("Análise feita com sucesso!");
       }
     } catch (error) {
       if (error instanceof AxiosError) {
-        const detail = error.response?.data?.detail;
+        console.log(error.response);
+        const detail = error.response?.data;
         toast.error(detail || error.message);
       } else {
         toast.error("Erro ao analisar e-mail");

@@ -3,48 +3,52 @@ import json
 from google import genai
 from google.genai import types
 
-# Prompt para análise de email
+# Prompt para análise de email refinado
 ANALYZE_EMAIL_INSTRUCTIONS = """
 ### ROLE
-You are an expert AI email analyst for a corporate recruitment challenge. Your goal is to classify emails strictly according to specific rules, determine the necessity of a reply (urgency), and suggest professional responses.
+You are an expert AI email analyst. Your goal is to classify emails, determine urgency, and suggest responses.
 
 ### INPUT DATA
 1. **Custom Categories List:** [{custom_categories_list}]
-   *(If this list contains 'None' or is empty, ignore Custom Category rules).*
+   *(List of specific topics provided by the user. Includes Name and Description).*
 
-### CLASSIFICATION PROTOCOL (EXECUTE IN ORDER)
+### CLASSIFICATION LOGIC (EXECUTE IN ORDER)
 
-**STEP 1: Custom Category Check (PRIORITY 1)**
-- Read the email content. Does it strictly match any topic in the "Custom Categories List"?
-- **IF YES:**
-  - `category`: Use the exact name from the custom list (Simplify to Title Case if too long).
-  - Determine `urgency` based on the content's need for a reply (0.0 to 100.0).
-  - **STOP** and generate output.
-- **IF NO:** Proceed to STEP 2.
+**STEP 1: Determine Nature (Productivity Analysis)**
+- Analyze the email content to determine its nature:
+  - **Produtivo (Actionable):** Requires a specific action, reply, decision, support, or scheduling.
+  - **Improdutivo (Non-actionable):** Merely informational, spam, receipts, social pleasantries (thank yous), or no-reply automated messages.
 
-**STEP 2: Binary Classification (Produtivo vs Improdutivo)**
-- Apply the following definitions STRICTLY from the job specification:
-  - **Produtivo**: Emails that REQUIRE a specific action or response (e.g., tech support requests, updates on open cases, system questions, scheduling).
-  - **Improdutivo**: Emails that DO NOT require immediate action or are merely informational/social (e.g., thank you notes, congratulations, simple receipts, spam).
+**STEP 2: Category Assignment (The Override Rule)**
+- Compare the email content semantically with the **Custom Categories List**.
+- **IF** the email content matches the *description* or *intent* of a Custom Category:
+  - **FINAL CATEGORY** = The exact name of that Custom Category.
+  - *Note:* This overrides "Produtivo" or "Improdutivo" labels, but you must remember the nature (Actionable/Non-actionable) for the urgency calculation.
+- **ELSE (If no custom match found):**
+  - **FINAL CATEGORY** = Use the result from STEP 1 ("Produtivo" or "Improdutivo").
 
-**STEP 3: Urgency Calculation (Synchronization Rule)**
-- You must calculate `urgency` (float 0.0 - 100.0) based EXCLUSIVELY on the necessity of sending a reply email.
-- **RULE FOR 'Improdutivo':** If category is 'Improdutivo', `urgency` MUST be **between 0.0 and 20.0**. (No reply needed = No urgency).
-- **RULE FOR 'Produtivo':** If category is 'Produtivo', `urgency` must be between **20.1 and 100.0**, depending on the tone:
-  - Low priority question: 20.1 - 40.0
-  - Standard request: 40.1 - 70.0
-  - Critical/ASAP/Angry client: 70.1 - 100.0
+**STEP 3: Urgency Calculation**
+- Calculate `urgency` (float 0.0 - 100.0) based on the necessity of a reply and the tone.
+- **Logic:**
+  - If Nature is **Improdutivo** (regardless of Category name): Urgency must be **0.0 - 20.0**.
+  - If Nature is **Produtivo**:
+    - Low priority (can wait days): 20.1 - 40.0
+    - Standard priority (routine requests, job applications, questions): 40.1 - 70.0
+    - High priority (urgent bugs, angry clients, ASAP requests): 70.1 - 100.0
 
 ### OUTPUT FORMAT RULES
-Return ONLY a raw JSON object. No markdown.
+Return ONLY a raw JSON object.
 
-1. **category**: String. Either a Custom Category name, "Produtivo", or "Improdutivo".
-2. **urgency**: Float (0.0 to 100.0). Follow the Synchronization Rule in Step 3.
-3. **reason**: String in **PORTUGUESE**. Explain clearly why it fits the category given the context of the email, exposing the sender's intent, humor and tone, it must be not too long and not too short. Explicitly mention if a reply is necessary or not.
-4. **answerSuggestion**: String in **PORTUGUESE**. A professional response draft based on the email context it must be not too short. If 'Improdutivo' and no reply is needed, return "Nenhuma resposta necessária." or a very brief polite acknowledgment.
+1. **category**: String. The result from STEP 2.
+2. **urgency**: Float. The result from STEP 3.
+3. **reason**: String in **PORTUGUESE**. Must cover 3 points:
+    - Why it fits the chosen category.
+    - The sender's tone/intent.
+    - **Explicitly explain why the specific urgency score was chosen** (e.g., "Urgência média pois requer agendamento, mas não é um erro crítico").
+4. **answerSuggestion**: String in **PORTUGUESE**. A professional response draft based on the email context. **MANDATORY:** NEVER return `null` or an empty string. Even for 'Improdutivo' or purely informational emails, generate a polite, brief acknowledgment phrase 
 5. **categoryColor**:
     - If category is "Produtivo" or "Improdutivo": value must be `null`.
-    - If category is Custom: Provide a random colorful Hex color code (e.g., "#FF5733"). Do NOT use Red or Green.
+    - If category is Custom: Provide a random colorful Hex color code.
 """
 
 REFINE_ANSWER_INSTRUCTIONS = """
