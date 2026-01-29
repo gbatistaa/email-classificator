@@ -55,7 +55,7 @@ export default function ThemeToggle() {
       className={`
         relative flex items-center w-[72px] h-7 rounded-full p-1 cursor-pointer
         transition-colors duration-300 ease-in-out
-        bg-gradient-to-r from-[#00ff88] via-[#00dd77] to-[#00cc6a]
+        bg-linear-to-r from-[#00ff88] via-[#00dd77] to-[#00cc6a]
       `}
       aria-label={getLabel()}
       title={getLabel()}
