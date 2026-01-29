@@ -106,7 +106,10 @@ async def refine_answer(request: RefineAnswerRequest):
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Resposta não enviada")
 
     try:
-        return refine_answer_service(request.answer, request.refine_type)
+        refined_answer = await run_in_threadpool(
+            refine_answer_service, request.answer, request.refine_type
+        )
+        return {"refinedAnswer": refined_answer}
     except Exception as e:
         raise HTTPException(422, f"Erro ao refinar texto: {str(e)}")
 

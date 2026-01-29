@@ -50,9 +50,9 @@ Return ONLY a raw JSON object. No markdown.
 REFINE_ANSWER_INSTRUCTIONS = """
 You are a professional AI expert in refining answers to emails.
 
-Refine the answer to the email based on the refine_type passed in the function parameter.
+Refine the answer to the email based on the {refine_type} but in english passed in the function parameter.
 The refined answer must be in PORTUGUESE and based on the email context.
-The refined vibe of the answer must be the same as in the refine_type passed in the function parameter.
+please don't add any extra information that is not in the email context. And really change the message to a new one refined
 
 Return ONLY a valid JSON object with the following structure:
 
@@ -104,9 +104,9 @@ def analyze_email(email: str, customCategories: str = "") -> dict:
 
 
 def refine_answer(curr_answer: str, refine_type: str) -> str:
-    user_prompt = (
-        f'Texto para refinar: "{curr_answer}"\nTipo de refinamento: "{refine_type}"'
-    )
+    instructions = REFINE_ANSWER_INSTRUCTIONS.replace("{refine_type}", refine_type)
+
+    user_prompt = f'Text to refine: "{curr_answer}" Refinement type: "{refine_type}"'
 
     client = get_client()
 
@@ -114,9 +114,9 @@ def refine_answer(curr_answer: str, refine_type: str) -> str:
         model="gemini-3-flash-preview",
         contents=user_prompt,
         config=types.GenerateContentConfig(
-            system_instruction=REFINE_ANSWER_INSTRUCTIONS,
+            system_instruction=instructions,
             response_mime_type="application/json",
-            temperature=0.5,  # Um pouco de criatividade para refinar texto
+            temperature=0.5,
         ),
     )
 

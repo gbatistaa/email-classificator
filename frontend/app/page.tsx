@@ -159,7 +159,7 @@ export default function Home() {
     >
       <Image src="/mail-prism.png" alt="Logo" width={200} height={200} />
       <div
-        className={`relative flex flex-col gap-8 mx-4 sm:mx-0 p-6 sm:p-8 md:p-12 rounded-2xl w-full sm:w-[560px] md:w-[640px] lg:w-[720px] xl:w-[800px] transition-all duration-300 ease-out ${isLight ? "bg-white shadow-lg" : "bg-[#171717]"}`}
+        className={`relative flex flex-col gap-8 mx-4 sm:mx-0 p-6 sm:p-8 md:p-12 rounded-2xl w-full sm:w-140 md:w-160 lg:w-180 xl:w-200 transition-all duration-300 ease-out ${isLight ? "bg-white shadow-lg" : "bg-[#171717]"}`}
       >
         {/* Theme Toggle - Top Right */}
         <div className="top-4 sm:top-6 right-4 sm:right-6 absolute">
@@ -261,7 +261,7 @@ export default function Home() {
             isLight={isLight}
           />
           <EmailAnswerSuggestion
-            geminiAnswer={geminiResponse.answerSuggestion}
+            geminiAnswer={geminiResponse?.answerSuggestion}
             isLight={isLight}
           />
         </>

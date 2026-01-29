@@ -24,7 +24,7 @@ interface RefineAnswerResponse {
 }
 
 interface EmailAnswerSuggestionProps {
-  geminiAnswer: string;
+  geminiAnswer?: string;
   isLight?: boolean;
 }
 
@@ -37,7 +37,7 @@ function EmailAnswerSuggestion({
   const [loadingMessage, setLoadingMessage] = useState("");
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(answer);
+    navigator.clipboard.writeText(answer || "");
     toast.success("Resposta copiada com sucesso!");
   };
 
@@ -59,7 +59,7 @@ function EmailAnswerSuggestion({
         refineAnswerRequest,
       );
 
-      setAnswer(data.refinedAnswer);
+      setAnswer(data?.refinedAnswer);
       toast.success("Resposta refinada com sucesso!");
     } catch (error) {
       if (error instanceof AxiosError) {
