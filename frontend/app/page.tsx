@@ -37,10 +37,6 @@ export default function Home() {
     if (selectedFile) {
       setFile(selectedFile);
     }
-    console.log(selectedFile?.name);
-    console.log(selectedFile?.size);
-    console.log(selectedFile?.type);
-    console.log(selectedFile?.lastModified);
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLLabelElement>) => {
