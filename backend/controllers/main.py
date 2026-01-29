@@ -52,6 +52,7 @@ async def analyze_file(file: UploadFile = File(...), customCategories: str = "")
 
         if file.content_type == "application/pdf":
             extracted_text = process_pdf(file_path)
+            file_path.unlink()
             cleaned_text = text_processor.clean_text(extracted_text)
             lemmatized_text = text_processor.lemmatize_and_remove_stopwords(
                 cleaned_text
