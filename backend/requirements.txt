@@ -3,6 +3,6 @@ uvicorn
 gunicorn
 python-dotenv
 google-genai
-pypandoc
+pypandoc-binary
 python-multipart
 requests
