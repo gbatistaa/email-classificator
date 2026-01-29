@@ -50,16 +50,18 @@ async def analyze_file(file: UploadFile = File(...), customCategories: str = "")
         file_path.write_bytes(content)
 
         if file.content_type == "application/pdf":
-            markdown = process_pdf(file_path)
-            return analyze_email(markdown, customCategories)
+            extracted_text = process_pdf(file_path)
+            cleaned_text = text_processor.clean_text(extracted_text)
+            lemmatized_text = text_processor.lemmatize_and_remove_stopwords(
+                cleaned_text
+            )
+            return analyze_email(lemmatized_text, customCategories)
 
         if file.content_type == "text/plain":
-            print("Chegou no txt")
             try:
                 plain_text = content.decode("utf-8")
             except UnicodeDecodeError:
                 raise HTTPException(422, "Arquivo TXT não está em UTF-8")
-            print("Texto lido com sucesso")
             return analyze_email(plain_text, customCategories)
 
     except Exception as e:

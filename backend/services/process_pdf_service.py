@@ -1,19 +1,23 @@
-from pypandoc import convert_file
+from pypdf import PdfReader
 from pathlib import Path
 
 
 def process_pdf(file_path: Path) -> str:
-    print("Chegou no process_pdf")
-    output_path = file_path.with_suffix(".md")
 
     try:
-        convert_file(str(file_path), "markdown", outputfile=str(output_path))
-        print("Convertido com sucesso")
-        markdown = output_path.read_text(encoding="utf-8")
-        print("Markdown lido com sucesso")
-        output_path.unlink()
-        print("Arquivo temporário removido com sucesso")
-        return markdown
+        reader = PdfReader(str(file_path))
+        text_content = []
+
+        for page in reader.pages:
+            text = page.extract_text()
+            if text:
+                text_content.append(text)
+
+        full_text = "\n\n".join(text_content)
+
+        print("Texto extraído com sucesso")
+
+        return full_text
 
     except Exception as e:
-        raise RuntimeError(f"Falha ao processar PDF com pypandoc: {e}")
+        raise RuntimeError(f"Falha ao processar PDF com pypdf: {e}")
