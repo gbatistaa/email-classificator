@@ -8,6 +8,7 @@ interface ProgressBarProps {
   useColorScale?: boolean;
   colorClass?: string;
   colorStyle?: string;
+  isLight?: boolean;
 }
 
 function ProgressBar({
@@ -15,6 +16,7 @@ function ProgressBar({
   useColorScale = false,
   colorClass,
   colorStyle,
+  isLight = false,
 }: ProgressBarProps) {
   const [animatedValue, setAnimatedValue] = useState(0);
   const animationRef = useRef<number | null>(null);
@@ -69,7 +71,11 @@ function ProgressBar({
     : undefined;
 
   return (
-    <div className="bg-[#b3b3b3]/30 rounded-full w-full h-2 overflow-hidden">
+    <div
+      className={`rounded-full w-full h-2 overflow-hidden ${
+        isLight ? "bg-[#d0d0d0]/50" : "bg-[#b3b3b3]/30"
+      }`}
+    >
       <div
         className={`h-full rounded-full ${colorClass || ""}`}
         style={{

@@ -23,7 +23,15 @@ interface RefineAnswerResponse {
   refinedAnswer: string;
 }
 
-function EmailAnswerSuggestion({ geminiAnswer }: { geminiAnswer: string }) {
+interface EmailAnswerSuggestionProps {
+  geminiAnswer: string;
+  isLight?: boolean;
+}
+
+function EmailAnswerSuggestion({
+  geminiAnswer,
+  isLight = false,
+}: EmailAnswerSuggestionProps) {
   const [answer, setAnswer] = useState(geminiAnswer);
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
@@ -67,27 +75,51 @@ function EmailAnswerSuggestion({ geminiAnswer }: { geminiAnswer: string }) {
   };
 
   return (
-    <article className="flex sm:flex-row flex-col gap-4 sm:gap-8 bg-[#171717] mx-4 sm:mx-0 mt-8 sm:mt-12 p-4 sm:p-6 rounded-2xl w-full sm:w-[560px] md:w-[640px] lg:w-[720px] xl:w-[800px] transition-all duration-300 ease-out">
+    <article
+      className={`flex sm:flex-row flex-col gap-4 sm:gap-8 mx-4 sm:mx-0 mt-8 sm:mt-12 p-4 sm:p-6 rounded-2xl w-full sm:w-[560px] md:w-[640px] lg:w-[720px] xl:w-[800px] transition-all duration-300 ease-out ${
+        isLight ? "bg-white shadow-lg" : "bg-[#171717]"
+      }`}
+    >
       <div className="flex h-full">
-        <div className="flex justify-center items-center bg-[#00ff88]/20 p-3 rounded-2xl">
-          <MdChatBubbleOutline className="w-8 h-8 text-[#00ff88]" />
+        <div
+          className={`flex justify-center items-center p-3 rounded-2xl ${
+            isLight ? "bg-[#00cc6a]/20" : "bg-[#00ff88]/20"
+          }`}
+        >
+          <MdChatBubbleOutline
+            className={`w-8 h-8 ${isLight ? "text-[#00cc6a]" : "text-[#00ff88]"}`}
+          />
         </div>
       </div>
       <div className="flex flex-col gap-5 w-full">
         {/* Título e classificação */}
         <div className="flex justify-between items-center">
           <div className="flex flex-col">
-            <h2 className="font-semibold text-lg">Sugestão de resposta</h2>
-            <span className="text-[#b3b3b3] text-xs">
+            <h2
+              className={`font-semibold text-lg ${isLight ? "text-[#1a1a1a]" : "text-white"}`}
+            >
+              Sugestão de resposta
+            </h2>
+            <span
+              className={`text-xs ${isLight ? "text-[#666666]" : "text-[#b3b3b3]"}`}
+            >
               Edite conforme sua necessidade
             </span>
           </div>
 
           {/* Badge de loading */}
           {loading && (
-            <div className="flex items-center gap-2 bg-[#00ff88]/10 px-3 py-1.5 rounded-full animate-pulse">
-              <div className="bg-[#00ff88] rounded-full w-2 h-2 animate-ping" />
-              <span className="font-medium text-white text-xs">
+            <div
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-full animate-pulse ${
+                isLight ? "bg-[#00cc6a]/10" : "bg-[#00ff88]/10"
+              }`}
+            >
+              <div
+                className={`rounded-full w-2 h-2 animate-ping ${isLight ? "bg-[#00cc6a]" : "bg-[#00ff88]"}`}
+              />
+              <span
+                className={`font-medium text-xs ${isLight ? "text-[#1a1a1a]" : "text-white"}`}
+              >
                 {loadingMessage}
               </span>
             </div>
@@ -100,8 +132,12 @@ function EmailAnswerSuggestion({ geminiAnswer }: { geminiAnswer: string }) {
             className={`p-4 border rounded-2xl focus:outline-none w-full h-64 text-sm duration-300 ease-out resize-none
               ${
                 loading
-                  ? "bg-[#1a1a1a] border-[#2e2e2e] text-[#666666] cursor-not-allowed"
-                  : "bg-[#242424] border-[#2e2e2e] focus:border-[#00ff88] focus:shadow-[0_0_20px_#00ff8833] text-[#f2f2f2]"
+                  ? isLight
+                    ? "bg-[#f5f5f5] border-[#e0e0e0] text-[#999999] cursor-not-allowed"
+                    : "bg-[#1a1a1a] border-[#2e2e2e] text-[#666666] cursor-not-allowed"
+                  : isLight
+                    ? "bg-[#f0f0f0] border-[#e0e0e0] focus:border-[#00cc6a] focus:shadow-[0_0_20px_#00cc6a33] text-[#1a1a1a]"
+                    : "bg-[#242424] border-[#2e2e2e] focus:border-[#00ff88] focus:shadow-[0_0_20px_#00ff8833] text-[#f2f2f2]"
               }`}
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
@@ -114,8 +150,12 @@ function EmailAnswerSuggestion({ geminiAnswer }: { geminiAnswer: string }) {
             className={`flex justify-center items-center gap-2 px-4 py-2 rounded-lg w-full sm:w-fit duration-300 ease-in-out
               ${
                 loading
-                  ? "bg-[#00ff88]/30 text-[#000a02]/50 cursor-not-allowed"
-                  : "bg-[#00ff88] hover:shadow-[0_0_20px_#00ff88d8] text-[#000a02] cursor-pointer"
+                  ? isLight
+                    ? "bg-[#00cc6a]/30 text-white/50 cursor-not-allowed"
+                    : "bg-[#00ff88]/30 text-[#000a02]/50 cursor-not-allowed"
+                  : isLight
+                    ? "bg-[#00cc6a] hover:shadow-[0_0_20px_#00cc6a99] text-white cursor-pointer"
+                    : "bg-[#00ff88] hover:shadow-[0_0_20px_#00ff88d8] text-[#000a02] cursor-pointer"
               }`}
             onClick={handleCopy}
             disabled={loading}
@@ -123,9 +163,15 @@ function EmailAnswerSuggestion({ geminiAnswer }: { geminiAnswer: string }) {
             <BiCopy />
             <span>Copiar</span>
           </button>
-          <div className="hidden sm:block self-center bg-[#2e2e2e] w-px h-2/3"></div>
+          <div
+            className={`hidden sm:block self-center w-px h-2/3 ${isLight ? "bg-[#e0e0e0]" : "bg-[#2e2e2e]"}`}
+          ></div>
           <div className="flex sm:flex-row flex-col sm:items-center gap-2">
-            <span className="text-[#b3b3b3] text-xs">Refinar:</span>
+            <span
+              className={`text-xs ${isLight ? "text-[#666666]" : "text-[#b3b3b3]"}`}
+            >
+              Refinar:
+            </span>
             <div className="flex flex-wrap gap-2">
               {Object.values(RefineTone).map((tone) => (
                 <button
@@ -133,8 +179,12 @@ function EmailAnswerSuggestion({ geminiAnswer }: { geminiAnswer: string }) {
                   className={`flex justify-center items-center gap-2 px-3 sm:px-4 py-2 border rounded-lg w-fit text-xs text-nowrap duration-300 ease-in-out
                     ${
                       loading
-                        ? "border-[#2e2e2e] text-[#666666] cursor-not-allowed"
-                        : "border-[#2e2e2e] hover:border-[#00ff88] text-[#f2f2f2] hover:text-[#00ff88] cursor-pointer"
+                        ? isLight
+                          ? "border-[#e0e0e0] text-[#999999] cursor-not-allowed"
+                          : "border-[#2e2e2e] text-[#666666] cursor-not-allowed"
+                        : isLight
+                          ? "border-[#e0e0e0] hover:border-[#00cc6a] text-[#1a1a1a] hover:text-[#00cc6a] cursor-pointer"
+                          : "border-[#2e2e2e] hover:border-[#00ff88] text-[#f2f2f2] hover:text-[#00ff88] cursor-pointer"
                     }`}
                   onClick={() =>
                     handleRefineTone(

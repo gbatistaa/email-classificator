@@ -2,11 +2,14 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { useAtom } from "jotai";
+import { resolvedThemeAtom } from "./store/themeAtom";
 import Header from "./components/Header";
 import UploadTypeTabs from "./components/UploadTypeTabs";
 import FileDropzone from "./components/FileDropzone";
 import FilePreview from "./components/FilePreview";
 import TextInput from "./components/TextInput";
+import ThemeToggle from "./components/ThemeToggle";
 import { BsStars } from "react-icons/bs";
 import api from "./api/api";
 import { toast } from "sonner";
@@ -20,6 +23,9 @@ import CustomCategoriesSection from "./components/CustomCategoriesSection";
 import { formatBytes } from "./utils/formatBytes";
 
 export default function Home() {
+  const [theme] = useAtom(resolvedThemeAtom);
+  const isLight = theme === "light";
+
   const [uploadType, setUploadType] = useState("file");
   const [file, setFile] = useState<File | null>(null);
   const [text, setText] = useState("");
@@ -148,14 +154,24 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center bg-[#000a02] min-h-screen font-sans">
+    <div
+      className={`flex flex-col justify-center items-center min-h-screen font-sans ${isLight ? "bg-[#f5f5f5]" : "bg-[#000a02]"}`}
+    >
       <Image src="/mail-prism.png" alt="Logo" width={200} height={200} />
-      <div className="flex flex-col gap-8 bg-[#171717] mx-4 sm:mx-0 p-6 sm:p-8 md:p-12 rounded-2xl w-full sm:w-[560px] md:w-[640px] lg:w-[720px] xl:w-[800px] transition-all duration-300 ease-out">
-        <Header />
+      <div
+        className={`relative flex flex-col gap-8 mx-4 sm:mx-0 p-6 sm:p-8 md:p-12 rounded-2xl w-full sm:w-[560px] md:w-[640px] lg:w-[720px] xl:w-[800px] transition-all duration-300 ease-out ${isLight ? "bg-white shadow-lg" : "bg-[#171717]"}`}
+      >
+        {/* Theme Toggle - Top Right */}
+        <div className="top-4 sm:top-6 right-4 sm:right-6 absolute">
+          <ThemeToggle />
+        </div>
+
+        <Header isLight={isLight} />
         <main className="flex flex-col gap-6">
           <UploadTypeTabs
             uploadType={uploadType}
             setUploadType={setUploadType}
+            isLight={isLight}
           />
           {uploadType === "file" && !file && (
             <FileDropzone
@@ -164,17 +180,23 @@ export default function Home() {
               onDrop={handleDrop}
               onDragLeave={handleDragLeave}
               onFileChange={handleFileChange}
+              isLight={isLight}
             />
           )}
           {uploadType === "file" && file && (
             <div className="flex w-full h-64">
-              <FilePreview file={file} onRemove={() => setFile(null)} />
+              <FilePreview
+                file={file}
+                onRemove={() => setFile(null)}
+                isLight={isLight}
+              />
             </div>
           )}
           {uploadType === "text" && (
             <TextInput
               text={text}
               onTextChange={(e) => setText(e.target.value)}
+              isLight={isLight}
             />
           )}
           <CustomCategoriesSection
@@ -192,13 +214,22 @@ export default function Home() {
               newCategories.splice(index, 1);
               setCustomCategories(newCategories);
             }}
+            isLight={isLight}
           />
 
           {/* Botão para enviar o arquivo para análise */}
           <div>
             <button
               className={`flex items-center justify-center gap-2 px-4 py-3 w-full rounded-lg duration-300 ease-in-out
-                ${file || text ? "bg-[#00ff88] text-[#000a02] hover:shadow-[0_0_20px_#00ff88d8] cursor-pointer" : "bg-[#00ff88]/20 cursor-not-allowed text-[#f2f2f2]"}
+                ${
+                  file || text
+                    ? isLight
+                      ? "bg-[#00cc6a] text-white hover:shadow-[0_0_20px_#00cc6a99] cursor-pointer"
+                      : "bg-[#00ff88] text-[#000a02] hover:shadow-[0_0_20px_#00ff88d8] cursor-pointer"
+                    : isLight
+                      ? "bg-[#00cc6a]/20 cursor-not-allowed text-[#666666]"
+                      : "bg-[#00ff88]/20 cursor-not-allowed text-[#f2f2f2]"
+                }
                 ${loading ? "cursor-not-allowed opacity-50" : ""}
               `}
               type="button"
@@ -209,8 +240,8 @@ export default function Home() {
                 <DNA
                   visible={true}
                   ariaLabel="dna-loading"
-                  dnaColorOne="#242424"
-                  dnaColorTwo="#242424"
+                  dnaColorOne={isLight ? "#ffffff" : "#242424"}
+                  dnaColorTwo={isLight ? "#ffffff" : "#242424"}
                   wrapperClass="h-6 w-6"
                 />
               ) : (
@@ -225,14 +256,20 @@ export default function Home() {
       </div>
       {geminiResponse && (
         <>
-          <EmailClassification geminiResponse={geminiResponse} />
+          <EmailClassification
+            geminiResponse={geminiResponse}
+            isLight={isLight}
+          />
           <EmailAnswerSuggestion
             geminiAnswer={geminiResponse.answerSuggestion}
+            isLight={isLight}
           />
         </>
       )}
       <footer className="flex justify-center items-center py-12">
-        <p className="text-[#b3b3b3] text-sm">
+        <p
+          className={`text-sm ${isLight ? "text-[#666666]" : "text-[#b3b3b3]"}`}
+        >
           MailPrism • Classificação inteligente de emails
         </p>
       </footer>
