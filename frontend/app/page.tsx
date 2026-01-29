@@ -198,8 +198,12 @@ export default function Home() {
           <div>
             <button
               className={`flex items-center justify-center gap-2 px-4 py-3 w-full rounded-lg duration-300 ease-in-out
-                ${file || text ? "bg-[#00ff88] text-[#000a02] hover:shadow-[0_0_20px_#00ff88d8] cursor-pointer" : "bg-[#00ff88]/20 cursor-not-allowed text-[#f2f2f2]"}`}
+                ${file || text ? "bg-[#00ff88] text-[#000a02] hover:shadow-[0_0_20px_#00ff88d8] cursor-pointer" : "bg-[#00ff88]/20 cursor-not-allowed text-[#f2f2f2]"}
+                ${loading ? "cursor-not-allowed opacity-50" : ""}
+              `}
+              type="button"
               onClick={() => handleAnalyze()}
+              disabled={loading}
             >
               {loading ? (
                 <DNA
