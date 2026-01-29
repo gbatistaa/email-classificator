@@ -24,9 +24,11 @@ Follow these steps in order. Do not skip steps.
     - Proceed to STEP 2.
 
 **STEP 2: General Classification (FALLBACK)**
-- If the email did NOT fit a custom category, classify as:
-    - **"Produtivo"**: Requires action, response, support, or updates.
+- If and ONLY IF the email did NOT fit any passed custom category on the custom_categories_list, then classify it as:
+    - **"Produtivo"**: Requires action but not fit in any of the categories, response, support, or updates.
     - **"Improdutivo"**: No action needed (e.g., pure "thank you", congratulations, spam).
+    
+    please do not classify as productive or unproductive if the content matches a custom category, if it does, USE IT
 
 ### OUTPUT FORMAT RULES
 Return ONLY a raw JSON object. Do not include markdown code blocks (```json).
@@ -37,7 +39,7 @@ Return ONLY a raw JSON object. Do not include markdown code blocks (```json).
 4. **answerSuggestion**: Professional response suggestion in **PORTUGUESE**.
 5. **categoryColor**:
     - If category is "Produtivo" or "Improdutivo": value must be `null`.
-    - If category is Custom: Provide a Hex color code (e.g., "#FF5733"). Do NOT use Red or Green.
+    - If category is Custom: Provide a random but colorfulHex color code (e.g., "#FF5733"). Do NOT use Red or Green.
 """
 
 REFINE_ANSWER_INSTRUCTIONS = """
