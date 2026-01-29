@@ -68,19 +68,21 @@ export default function Home() {
           return;
         }
 
+        console.log("Arquivo existe");
         if (!["application/pdf", "text/plain"].includes(file.type)) {
           toast.error(
             `Tipo de arquivo não suportado: ${file.type.split("/")[1]}`,
           );
+          console.log("Arquivo inválido");
           return;
         }
-
+        console.log("Arquivo válido");
         const formData = new FormData();
         formData.append("file", file);
         formData.append("customCategories", JSON.stringify(customCategories));
-
+        console.log("Form data criado");
         const { data } = await api.post("/analyze", formData);
-        console.log(data);
+        console.log("Resposta do backend: ", data);
         setGeminiResponse(data);
         toast.success("Análise feita com sucesso!");
       } else {
@@ -112,7 +114,7 @@ export default function Home() {
   return (
     <div className="flex flex-col justify-center items-center bg-[#000a02] min-h-screen font-sans">
       <Image src="/mail-prism.png" alt="Logo" width={200} height={200} />
-      <div className="flex flex-col gap-8 bg-[#171717] p-12 rounded-2xl w-2/5 transition-all duration-300 ease-out">
+      <div className="flex flex-col gap-8 bg-[#171717] mx-4 sm:mx-0 p-6 sm:p-8 md:p-12 rounded-2xl w-full sm:w-[560px] md:w-[640px] lg:w-[720px] xl:w-[800px] transition-all duration-300 ease-out">
         <Header />
         <main className="flex flex-col gap-6">
           <UploadTypeTabs

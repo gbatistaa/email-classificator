@@ -67,7 +67,7 @@ function EmailAnswerSuggestion({ geminiAnswer }: { geminiAnswer: string }) {
   };
 
   return (
-    <article className="flex gap-8 bg-[#171717] mt-12 p-6 rounded-2xl w-2/5 transition-all duration-300 ease-out">
+    <article className="flex sm:flex-row flex-col gap-4 sm:gap-8 bg-[#171717] mx-4 sm:mx-0 mt-8 sm:mt-12 p-4 sm:p-6 rounded-2xl w-full sm:w-[560px] md:w-[640px] lg:w-[720px] xl:w-[800px] transition-all duration-300 ease-out">
       <div className="flex h-full">
         <div className="flex justify-center items-center bg-[#00ff88]/20 p-3 rounded-2xl">
           <MdChatBubbleOutline className="w-8 h-8 text-[#00ff88]" />
@@ -109,9 +109,9 @@ function EmailAnswerSuggestion({ geminiAnswer }: { geminiAnswer: string }) {
           />
         </div>
 
-        <div className="flex gap-4">
+        <div className="flex sm:flex-row flex-col gap-4">
           <button
-            className={`flex justify-center items-center gap-2 px-4 py-2 rounded-lg w-fit duration-300 ease-in-out
+            className={`flex justify-center items-center gap-2 px-4 py-2 rounded-lg w-full sm:w-fit duration-300 ease-in-out
               ${
                 loading
                   ? "bg-[#00ff88]/30 text-[#000a02]/50 cursor-not-allowed"
@@ -123,29 +123,31 @@ function EmailAnswerSuggestion({ geminiAnswer }: { geminiAnswer: string }) {
             <BiCopy />
             <span>Copiar</span>
           </button>
-          <div className="self-center bg-[#2e2e2e] w-px h-2/3"></div>
-          <div className="flex items-center gap-2">
+          <div className="hidden sm:block self-center bg-[#2e2e2e] w-px h-2/3"></div>
+          <div className="flex sm:flex-row flex-col sm:items-center gap-2">
             <span className="text-[#b3b3b3] text-xs">Refinar:</span>
-            {Object.values(RefineTone).map((tone) => (
-              <button
-                key={tone}
-                className={`flex justify-center items-center gap-2 px-4 py-2 border rounded-lg w-fit text-xs text-nowrap duration-300 ease-in-out
-                  ${
-                    loading
-                      ? "border-[#2e2e2e] text-[#666666] cursor-not-allowed"
-                      : "border-[#2e2e2e] hover:border-[#00ff88] text-[#f2f2f2] hover:text-[#00ff88] cursor-pointer"
-                  }`}
-                onClick={() =>
-                  handleRefineTone(
-                    (tone as string).toLocaleLowerCase() as RefineTone,
-                    tone as RefineTone,
-                  )
-                }
-                disabled={loading}
-              >
-                <span>{tone}</span>
-              </button>
-            ))}
+            <div className="flex flex-wrap gap-2">
+              {Object.values(RefineTone).map((tone) => (
+                <button
+                  key={tone}
+                  className={`flex justify-center items-center gap-2 px-3 sm:px-4 py-2 border rounded-lg w-fit text-xs text-nowrap duration-300 ease-in-out
+                    ${
+                      loading
+                        ? "border-[#2e2e2e] text-[#666666] cursor-not-allowed"
+                        : "border-[#2e2e2e] hover:border-[#00ff88] text-[#f2f2f2] hover:text-[#00ff88] cursor-pointer"
+                    }`}
+                  onClick={() =>
+                    handleRefineTone(
+                      (tone as string).toLocaleLowerCase() as RefineTone,
+                      tone as RefineTone,
+                    )
+                  }
+                  disabled={loading}
+                >
+                  <span>{tone}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>

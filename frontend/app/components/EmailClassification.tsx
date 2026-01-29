@@ -32,7 +32,7 @@ function EmailClassification({
   };
 
   return (
-    <article className="flex gap-8 bg-[#171717] mt-12 p-6 rounded-2xl w-2/5 transition-all duration-300 ease-out">
+    <article className="flex sm:flex-row flex-col gap-4 sm:gap-8 bg-[#171717] mx-4 sm:mx-0 mt-8 sm:mt-12 p-4 sm:p-6 rounded-2xl w-full sm:w-[560px] md:w-[640px] lg:w-[720px] xl:w-[800px] transition-all duration-300 ease-out">
       <div className="flex h-full">
         <div className="flex justify-center items-center bg-[#00ff88]/20 p-3 rounded-2xl">
           <PiChartLineUpBold className="w-8 h-8 text-[#00ff88]" />

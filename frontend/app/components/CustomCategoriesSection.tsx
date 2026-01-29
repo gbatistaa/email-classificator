@@ -54,7 +54,7 @@ export default function CustomCategoriesSection({
       {isOpen && (
         <div className="flex flex-col gap-4 p-4 w-full">
           {/* Cards fixos de categorias padrão */}
-          <div className="flex gap-2">
+          <div className="flex sm:flex-row flex-col gap-2">
             <div className="flex flex-1 items-center gap-2 bg-[#00ff88]/10 px-4 py-3 border border-[#00ff88]/30 rounded-2xl">
               <div className="bg-[#00ff88] rounded-full w-2.5 h-2.5"></div>
               <div className="flex flex-col">
