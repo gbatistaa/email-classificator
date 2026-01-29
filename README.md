@@ -15,6 +15,7 @@ _Turn chaos into clarity — organize your emails with the power of Artificial I
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
 ![Axios](https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white)
+![spaCy](https://img.shields.io/badge/spaCy-09A3D5?style=for-the-badge&logo=spacy&logoColor=white)
 ![Google Gemini](https://img.shields.io/badge/Google_Gemini-4285F4?style=for-the-badge&logo=google&logoColor=white)
 
 </div>
@@ -79,21 +80,24 @@ In addition to classification, MailPrism offers:
 - 📝 **Detailed analysis** of the context and sender's intention
 - 💡 **Response suggestions** professionally generated automatically
 - 🎨 **Custom categories** defined by the user
+- 🔒 **Sensitive data masking** (CPF, emails) for privacy protection
 
 ---
 
 ## ✨ Features
 
-| Feature                         | Description                                                 |
-| ------------------------------- | ----------------------------------------------------------- |
-| 📄 **PDF Upload**               | Upload emails in PDF format for analysis                    |
-| 📝 **TXT Upload**               | Support for plain text files                                |
-| ⌨️ **Text Input**               | Paste email content directly into the interface             |
-| 🏷️ **Automatic Categorization** | Classification as Productive/Unproductive or custom categories |
-| ⚡ **Urgency Indicator**        | Urgency percentage based on content                         |
-| 💬 **Response Suggestion**      | Professional response suggested by AI                       |
-| ✏️ **Response Refinement**      | Adjust the response tone (formal, casual, etc.)             |
-| 🎨 **Custom Colors**            | Automatic colors for custom categories                      |
+| Feature                         | Description                                                     |
+| ------------------------------- | --------------------------------------------------------------- |
+| 📄 **PDF Upload**               | Upload emails in PDF format for analysis with NLP preprocessing |
+| 📝 **TXT Upload**               | Support for plain text files                                    |
+| ⌨️ **Text Input**               | Paste email content directly into the interface                 |
+| 🏷️ **Automatic Categorization** | Classification as Productive/Unproductive or custom categories  |
+| ⚡ **Urgency Indicator**        | Urgency percentage based on content                             |
+| 💬 **Response Suggestion**      | Professional response suggested by AI                           |
+| ✏️ **Response Refinement**      | Adjust the response tone (formal, casual, empathetic)           |
+| 🎨 **Custom Colors**            | Automatic colors for custom categories                          |
+| 🔒 **Data Masking**             | Automatic CPF and email masking for sensitive data protection   |
+| 🧠 **NLP Processing**           | Text cleaning, lemmatization, and stopword removal for PDFs     |
 
 ---
 
@@ -101,14 +105,16 @@ In addition to classification, MailPrism offers:
 
 ### Backend
 
-| Technology            | Use                                          |
-| --------------------- | -------------------------------------------- |
-| **Python 3.x**        | Main backend language                        |
-| **FastAPI**           | High-performance web framework for APIs      |
-| **Uvicorn**           | ASGI server to run the application           |
-| **Docling**           | PDF document conversion to Markdown          |
-| **Google Gemini API** | AI engine for analysis and classification   |
-| **Pydantic**          | Data validation and schemas                  |
+| Technology            | Use                                                |
+| --------------------- | -------------------------------------------------- |
+| **Python 3.x**        | Main backend language                              |
+| **FastAPI**           | High-performance web framework for APIs            |
+| **Uvicorn**           | ASGI server to run the application                 |
+| **Gunicorn**          | WSGI HTTP server for production deployment         |
+| **pypdf**             | PDF text extraction library                        |
+| **spaCy**             | NLP library for text cleaning and lemmatization    |
+| **Google Gemini API** | AI engine for analysis and classification          |
+| **Pydantic**          | Data validation and schemas                        |
 
 ### Frontend
 
@@ -145,10 +151,21 @@ In addition to classification, MailPrism offers:
     └─────────────┘                            └──────┬──────┘   └──────┬──────┘
                                                       │                 │
                                                       ▼                 │
-                                             ┌─────────────────┐        │
-                                             │     DOCLING     │        │
-                                             │  (PDF → MD)     │        │
-                                             └────────┬────────┘        │
+                                              ┌───────────────┐         │
+                                              │     PYPDF     │         │
+                                              │ (Text Extract)│         │
+                                              └───────┬───────┘         │
+                                                      │                 │
+                                                      ▼                 │
+                                              ┌───────────────┐         │
+                                              │  NLP SERVICE  │         │
+                                              │    (spaCy)    │         │
+                                              │ • Clean text  │         │
+                                              │ • Mask CPF    │         │
+                                              │ • Mask emails │         │
+                                              │ • Lemmatize   │         │
+                                              │ • Stopwords   │         │
+                                              └───────┬───────┘         │
                                                       │                 │
                                                       └────────┬────────┘
                                                                │
@@ -181,9 +198,17 @@ In addition to classification, MailPrism offers:
    - Sends via Axios to the FastAPI backend
 
 3. **Backend Processing (FastAPI)**
-   - **For PDFs**: Docling converts the document to Markdown
-   - **For TXT**: Content is read directly as UTF-8
-   - The processed text is sent to the Gemini API
+   - **For PDFs**:
+     1. **pypdf** extracts raw text from the PDF document
+     2. **NLP Service (spaCy)** processes the text:
+        - Unicode normalization
+        - Masks sensitive data (CPF, email addresses)
+        - Removes PDF artifacts and non-printable characters
+        - Normalizes whitespace
+        - Lemmatizes words (converts to root form)
+        - Removes stopwords and punctuation
+     3. Processed text is sent to Gemini API
+   - **For TXT/Raw Text**: Content is sent directly to Gemini API (no NLP preprocessing)
 
 4. **AI Analysis (Google Gemini)**
    - Gemini analyzes the email content
@@ -239,7 +264,15 @@ In addition to classification, MailPrism offers:
    pip install -r requirements.txt
    ```
 
-4. **Configure environment variables**
+4. **Download spaCy Portuguese model**
+
+   ```bash
+   python -m spacy download pt_core_news_sm
+   ```
+
+   > Note: The application will auto-download this model if not present, but manual installation is recommended.
+
+5. **Configure environment variables**
 
    ```bash
    # Create the .env file
@@ -249,7 +282,7 @@ In addition to classification, MailPrism offers:
    # GEMINI_API_KEY=your_key_here
    ```
 
-5. **Run the server**
+6. **Run the server**
 
    ```bash
    uvicorn controllers.main:app --reload
@@ -299,15 +332,15 @@ In addition to classification, MailPrism offers:
 
 ### Backend (`.env`)
 
-| Variable         | Description                  | Required  |
-| ---------------- | ---------------------------- | --------- |
-| `GEMINI_API_KEY` | Google Gemini API key        | ✅ Yes    |
+| Variable         | Description           | Required |
+| ---------------- | --------------------- | -------- |
+| `GEMINI_API_KEY` | Google Gemini API key | ✅ Yes   |
 
 ### Frontend (`.env.development`)
 
-| Variable              | Description               | Required  |
-| --------------------- | ------------------------- | --------- |
-| `NEXT_PUBLIC_API_URL` | FastAPI backend URL       | ✅ Yes    |
+| Variable              | Description         | Required |
+| --------------------- | ------------------- | -------- |
+| `NEXT_PUBLIC_API_URL` | FastAPI backend URL | ✅ Yes   |
 
 ---
 
@@ -315,22 +348,23 @@ In addition to classification, MailPrism offers:
 
 ### For Companies
 
-| Benefit                        | Impact                                                     |
-| ------------------------------ | ---------------------------------------------------------- |
-| ⏱️ **Time Savings**            | Reduce email sorting time by up to 70%                     |
+| Benefit                         | Impact                                                     |
+| ------------------------------- | ---------------------------------------------------------- |
+| ⏱️ **Time Savings**             | Reduce email sorting time by up to 70%                     |
 | 📊 **Automatic Prioritization** | Focus on what really matters with urgency indicators       |
-| 🤖 **Standardized Responses**  | Maintain consistency in communications with AI suggestions |
-| 📈 **Productivity**            | More efficient teams with fewer unproductive emails        |
-| 🎯 **Custom Categorization**   | Adapt to your business-specific needs                      |
+| 🤖 **Standardized Responses**   | Maintain consistency in communications with AI suggestions |
+| 📈 **Productivity**             | More efficient teams with fewer unproductive emails        |
+| 🎯 **Custom Categorization**    | Adapt to your business-specific needs                      |
+| 🔒 **Data Privacy**             | Automatic masking of sensitive information (CPF, emails)   |
 
 ### For Individual Users
 
-| Benefit                    | Impact                                                     |
-| -------------------------- | ---------------------------------------------------------- |
-| 🧘 **Less Overload**       | Instantly know which emails need attention                 |
-| 💡 **Quick Responses**     | Use response suggestions to speed up your communication    |
-| 🎨 **Intuitive Interface** | Modern and pleasant user experience                        |
-| 📱 **Flexibility**         | Analyze PDF, TXT, or plain text                            |
+| Benefit                    | Impact                                                  |
+| -------------------------- | ------------------------------------------------------- |
+| 🧘 **Less Overload**       | Instantly know which emails need attention              |
+| 💡 **Quick Responses**     | Use response suggestions to speed up your communication |
+| 🎨 **Intuitive Interface** | Modern and pleasant user experience                     |
+| 📱 **Flexibility**         | Analyze PDF, TXT, or plain text                         |
 
 ---
 
@@ -338,7 +372,7 @@ In addition to classification, MailPrism offers:
 
 ### `POST /analyze`
 
-Analyzes a PDF or TXT file.
+Analyzes a PDF or TXT file. PDFs go through NLP preprocessing (text cleaning, lemmatization, stopword removal).
 
 **Request:**
 
@@ -365,7 +399,7 @@ customCategories: <JSON string with custom categories>
 
 ### `POST /analyze-text`
 
-Analyzes plain text.
+Analyzes raw text directly (no NLP preprocessing).
 
 **Request:**
 
@@ -381,7 +415,7 @@ Analyzes plain text.
 
 ### `POST /refine-answer`
 
-Refines a response suggestion.
+Refines a response suggestion with a specific tone.
 
 **Request:**
 
