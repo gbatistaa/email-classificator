@@ -3,28 +3,41 @@ import json
 from google import genai
 from google.genai import types
 
-
 ANALYZE_EMAIL_INSTRUCTIONS = """
-You are a professional AI expert in analyzing emails and classifying them into productive or unproductive.
+### ROLE
+You are an expert AI email analyst. Your job is to classify emails, determine urgency, and suggest responses.
 
-Productive emails require an action or response (e.g. support requests, updates on open cases, questions).
-Unproductive emails do not require an action or response (e.g. congratulations, thanks).
+### INPUT DATA
+1. **Custom Categories List:** [{custom_categories_list}]
+   *(If this list contains 'None' or is empty, ignore Custom Category rules).*
 
-Return ONLY a valid JSON object with the following structure:
+### CLASSIFICATION RULES (STRICT PRIORITY)
+Follow these steps in order. Do not skip steps.
 
-{
-    "category": "Produtivo" | "Improdutivo" | {Any of the customCategories in the customCategories parameter} classify the email based on the context of the email if it is necessary to respond or not respectively (productive or unproductive or some custom category, but if the email is productive or unproductive and fits is some of the custom categories send the custom category that matches the most) if the name of the custom category is too big you can simplify in 2 words, first letter of first word in uppercase and the rest in lowercase and the second word in lowercase, and the most important thing is that the category must match with the context of the email, and the most important thing also is: if the custom categories field are empty, do NOT send any custom category, only send "Produtivo" or "Improdutivo"
-    "urgency": The percentage of urgency of what the sender is asking for must be a json float between 0.0 and 100.0
-    "reason": "detailed explanation in portuguese"
-    "answerSuggestion": "A suggestion for an answer to the sent email it have to be in portuguese and profeesional based on the email context"
-    "categoryColor": A hex color code with # in the beginning for the category must be a json string in hex format, must be a color that match with the category and isn't either red or green but it doesn't have to be blue you can choose any hex color you want, but if the category is "Produtivo" or "Improdutivo" send ALWAYS null
-}
+**STEP 1: Check Custom Categories (HIGHEST PRIORITY)**
+- Analyze the email context provided by the user. Does it fit ANY of the categories provided in the "Custom Categories List" above?
+- IF YES:
+    - The `category` is the name of that custom category.
+    - If the name is long, simplify it to 2 words (Title Case: First word Capitalized, second lowercase).
+    - **STOP** classifying. Use this category. Do NOT use "Produtivo" or "Improdutivo".
+- IF NO (or if the list is empty):
+    - Proceed to STEP 2.
 
-The reason must be written in Portuguese and include:
-- the context of the email
-- the sender's intention
-- the emotional tone or feeling of the sender
-- some suggestions for action or response if that email is productive and the level of urgency of what the sender is asking for
+**STEP 2: General Classification (FALLBACK)**
+- If the email did NOT fit a custom category, classify as:
+    - **"Produtivo"**: Requires action, response, support, or updates.
+    - **"Improdutivo"**: No action needed (e.g., pure "thank you", congratulations, spam).
+
+### OUTPUT FORMAT RULES
+Return ONLY a raw JSON object. Do not include markdown code blocks (```json).
+
+1. **category**: Result from the Classification Rules above.
+2. **urgency**: Float (0.0 to 100.0).
+3. **reason**: Explanation in **PORTUGUESE**. Must include context, intent, emotional tone, and justification for the category and must include a suggestion of action of the reader besides de response or not.
+4. **answerSuggestion**: Professional response suggestion in **PORTUGUESE**.
+5. **categoryColor**:
+    - If category is "Produtivo" or "Improdutivo": value must be `null`.
+    - If category is Custom: Provide a Hex color code (e.g., "#FF5733"). Do NOT use Red or Green.
 """
 
 REFINE_ANSWER_INSTRUCTIONS = """
@@ -46,25 +59,32 @@ def get_client() -> genai.Client:
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         raise RuntimeError("GEMINI_API_KEY não definida")
-
     return genai.Client(api_key=api_key)
 
 
 def analyze_email(email: str, customCategories: str = "") -> dict:
     client = get_client()
-    print("Chegou no analyze_email")
+
+    formatted_categories = customCategories if customCategories.strip() else "None"
+
+    system_prompt = ANALYZE_EMAIL_INSTRUCTIONS.format(
+        custom_categories_list=formatted_categories
+    )
+
     response = client.models.generate_content(
         model="gemini-3-flash-preview",
         contents=email,
         config=types.GenerateContentConfig(
-            system_instruction=ANALYZE_EMAIL_INSTRUCTIONS + customCategories,
+            system_instruction=system_prompt,
             response_mime_type="application/json",
+            temperature=0.1,
         ),
     )
-    print("Resposta do Gemini: ", response.text)
+
     try:
         return json.loads(response.text)
     except json.JSONDecodeError:
+        print(f"ERRO JSON: O modelo retornou: {response.text}")
         raise RuntimeError(f"Resposta inválida do Gemini: {response.text}")
 
 
@@ -84,9 +104,8 @@ def refine_answer(curr_answer: str, refine_type: str) -> str:
         ),
     )
 
-    print("Resposta do Gemini: ", response)
-
     try:
-        return json.loads(response.text)
+        data = json.loads(response.text)
+        return data.get("refinedAnswer", response.text)
     except json.JSONDecodeError:
         raise RuntimeError(f"Resposta inválida do Gemini: {response.text}")
