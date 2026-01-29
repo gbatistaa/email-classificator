@@ -1,14 +1,15 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.concurrency import run_in_threadpool
 from pathlib import Path
 from dotenv import load_dotenv
 from pydantic import BaseModel
 from services.process_pdf_service import process_pdf
+from services.nlp_service import text_processor
 from services.gemini_service import (
     analyze_email,
     refine_answer as refine_answer_service,
 )
-from services.nlp_service import text_processor
 
 load_dotenv()
 
@@ -51,12 +52,20 @@ async def analyze_file(file: UploadFile = File(...), customCategories: str = "")
         file_path.write_bytes(content)
 
         if file.content_type == "application/pdf":
-            extracted_text = process_pdf(file_path)
+            extracted_text = await run_in_threadpool(process_pdf, file_path)
             file_path.unlink()
-            cleaned_text = text_processor.clean_text(extracted_text)
-            lemmatized_text = text_processor.lemmatize_and_remove_stopwords(
-                cleaned_text
+
+            cleaned_text = await run_in_threadpool(
+                text_processor.clean_text, extracted_text
             )
+
+            lemmatized_text = await run_in_threadpool(
+                text_processor.lemmatize_and_remove_stopwords, cleaned_text
+            )
+
+            # Aplico um limite máximo de caracteres para garantir estabilidade do serviço (não afeta a qualidade da análise)
+            lemmatized_text = lemmatized_text[:15000]
+
             return analyze_email(lemmatized_text, customCategories)
 
         if file.content_type == "text/plain":
