@@ -16,7 +16,7 @@ app = FastAPI()
 # CORS - permitir requisições do frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000, https://mailprismai.vercel.app"],
+    allow_origins=["http://localhost:3000", "https://mailprismai.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -54,11 +54,12 @@ async def analyze_file(file: UploadFile = File(...), customCategories: str = "")
             return analyze_email(markdown, customCategories)
 
         if file.content_type == "text/plain":
+            print("Chegou no txt")
             try:
                 plain_text = content.decode("utf-8")
             except UnicodeDecodeError:
                 raise HTTPException(422, "Arquivo TXT não está em UTF-8")
-
+            print("Texto lido com sucesso")
             return analyze_email(plain_text, customCategories)
 
     except Exception as e:

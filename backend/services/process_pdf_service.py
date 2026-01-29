@@ -1,14 +1,19 @@
-from io import BytesIO
+from pypandoc import convert_file
 from pathlib import Path
-from docling.document_converter import DocumentConverter
 
 
 def process_pdf(file_path: Path) -> str:
-    converter = DocumentConverter()
-    result = converter.convert(source=file_path)
-    markdown = result.document.export_to_markdown()
+    print("Chegou no process_pdf")
+    output_path = file_path.with_suffix(".md")
 
-    pdf_markdown_path = file_path.with_suffix(".md")
-    pdf_markdown_path.write_text(markdown)
+    try:
+        convert_file(str(file_path), "markdown", outputfile=str(output_path))
+        print("Convertido com sucesso")
+        markdown = output_path.read_text(encoding="utf-8")
+        print("Markdown lido com sucesso")
+        output_path.unlink()
+        print("Arquivo temporário removido com sucesso")
+        return markdown
 
-    return markdown
+    except Exception as e:
+        raise RuntimeError(f"Falha ao processar PDF com pypandoc: {e}")

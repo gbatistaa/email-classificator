@@ -52,7 +52,7 @@ def get_client() -> genai.Client:
 
 def analyze_email(email: str, customCategories: str = "") -> dict:
     client = get_client()
-
+    print("Chegou no analyze_email")
     response = client.models.generate_content(
         model="gemini-3-flash-preview",
         contents=email,
@@ -61,7 +61,7 @@ def analyze_email(email: str, customCategories: str = "") -> dict:
             response_mime_type="application/json",
         ),
     )
-
+    print("Resposta do Gemini: ", response.text)
     try:
         return json.loads(response.text)
     except json.JSONDecodeError:
