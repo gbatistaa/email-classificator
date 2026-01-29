@@ -6,3 +6,4 @@ google-genai
 pypdf
 python-multipart
 requests
+spacy

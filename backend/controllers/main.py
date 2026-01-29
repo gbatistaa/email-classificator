@@ -8,6 +8,7 @@ from services.gemini_service import (
     analyze_email,
     refine_answer as refine_answer_service,
 )
+from services.nlp_service import text_processor
 
 load_dotenv()
 

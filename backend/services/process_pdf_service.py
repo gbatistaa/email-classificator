@@ -15,8 +15,6 @@ def process_pdf(file_path: Path) -> str:
 
         full_text = "\n\n".join(text_content)
 
-        print("Texto extraído com sucesso")
-
         return full_text
 
     except Exception as e:
