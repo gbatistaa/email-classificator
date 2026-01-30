@@ -129,6 +129,7 @@ function EmailAnswerSuggestion({
         {/* Área de texto para a sugestão de resposta */}
         <div className="relative flex flex-col gap-2">
           <textarea
+            style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
             className={`p-4 border rounded-2xl focus:outline-none w-full h-64 text-sm duration-300 ease-out resize-none
               ${
                 loading

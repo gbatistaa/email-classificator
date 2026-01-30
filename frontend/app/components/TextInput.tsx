@@ -12,6 +12,7 @@ export default function TextInput({
   return (
     <div className="flex flex-col gap-2 w-full">
       <textarea
+        style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
         className={`p-4 border rounded-2xl focus:outline-none w-full h-64 text-sm duration-300 ease-out resize-none ${
           isLight
             ? "bg-[#f0f0f0] focus:shadow-[0_0_20px_#00cc6a33] border-[#e0e0e0] focus:border-[#00cc6a] text-[#1a1a1a] placeholder-[#999999]"
