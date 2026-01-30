@@ -45,6 +45,7 @@ Return ONLY a raw JSON object.
     - Why it fits the chosen category.
     - The sender's tone/intent.
     - **Explicitly explain why the specific urgency score was chosen** (e.g., "Urgência média pois requer agendamento, mas não é um erro crítico").
+    - Be detailed about the email content show in the output what really are the email about
 4. **answerSuggestion**: String in **PORTUGUESE**. A professional response draft based on the email context. **MANDATORY:** NEVER return `null` or an empty string. Even for 'Improdutivo' or purely informational emails, generate a polite, brief acknowledgment phrase 
 5. **categoryColor**:
     - If category is "Produtivo" or "Improdutivo": value must be `null`.

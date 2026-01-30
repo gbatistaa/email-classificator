@@ -10,7 +10,6 @@ async def process_text_pipeline(raw_text: str, customCategories):
         text_processor.lemmatize_and_remove_stopwords, cleaned_text
     )
 
-    # Limite de segurança
-    lemmatized_text = lemmatized_text[:15000]
+    print(lemmatized_text)
 
-    return analyze_email(lemmatized_text, customCategories)
+    return await run_in_threadpool(analyze_email, lemmatized_text, customCategories)

@@ -6,9 +6,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from pydantic import BaseModel
 from services.process_pdf_service import process_pdf
-from services.nlp_service import text_processor
 from services.gemini_service import (
-    analyze_email,
     refine_answer as refine_answer_service,
 )
 
@@ -55,6 +53,8 @@ async def analyze_file(file: UploadFile = File(...), customCategories: str = "")
         if file.content_type == "application/pdf":
             extracted_text = await run_in_threadpool(process_pdf, file_path)
             file_path.unlink(missing_ok=True)
+            
+            print(extracted_text)
 
             return await process_text_pipeline(extracted_text, customCategories)
 
@@ -86,7 +86,8 @@ async def analyze_text(request: TextAnalyzeRequest):
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Texto não enviado")
 
     try:
-        return analyze_email(request.text, request.customCategories)
+        print(request.text)
+        return await process_text_pipeline(request.text, request.customCategories)
     except Exception as e:
         raise HTTPException(422, f"Erro ao analisar texto: {str(e)}")
 
