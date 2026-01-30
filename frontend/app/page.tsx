@@ -13,7 +13,7 @@ import ThemeToggle from "./components/ThemeToggle";
 import { BsStars } from "react-icons/bs";
 import api from "./api/api";
 import { toast } from "sonner";
-import { AxiosError } from "axios";
+import { AxiosError, AxiosHeaders } from "axios";
 import { DNA } from "react-loader-spinner";
 import EmailClassification from "./components/EmailClassification";
 import EmailAnswerSuggestion from "./components/EmailAnswerSuggestion";
@@ -97,10 +97,27 @@ export default function Home() {
     }
   };
 
-  const handleAnalyze = async () => {
-    setLoading(true);
-    setGeminiResponse(null);
+  const MAX_RETRIES = 3;
+
+  const sleep = (ms: number) => {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  };
+
+  const countdown = async (seconds: number) => {
+    for (let i = seconds; i > 0; i--) {
+      toast.error(
+        `Serviço sobrecarregado, tentando novamente em ${i} segundos.`,
+        { duration: 1000 },
+      );
+      await sleep(1000);
+    }
+  };
+
+  const handleAnalyze = async (retry = 0) => {
     try {
+      setLoading(true);
+      setGeminiResponse(null);
+
       if (customCategories.length > 0) {
         const hasEmptyCategory = customCategories.some(
           (category) => category.name.trim().length === 0,
@@ -110,6 +127,8 @@ export default function Home() {
           return;
         }
       }
+
+      let data;
 
       if (uploadType === "file") {
         if (!file) {
@@ -121,52 +140,43 @@ export default function Home() {
         formData.append("file", file);
         formData.append("customCategories", JSON.stringify(customCategories));
 
-        const { data } = await api.post("/analyze", formData);
-        setGeminiResponse(data);
-
-        toast.success("Análise feita com sucesso!");
+        const response = await api.post("/analyze", formData);
+        data = response.data;
       } else {
-        if (text.length === 0 || !text) {
+        if (!text.trim()) {
           toast.error("Não é possível analisar texto vazio!");
           return;
         }
 
-        const { data } = await api.post("/analyze-text", {
+        const response = await api.post("/analyze-text", {
           text,
           customCategories: JSON.stringify(customCategories),
         });
-        setGeminiResponse(data);
-        toast.success("Análise feita com sucesso!");
+
+        data = response.data;
       }
+
+      setGeminiResponse(data);
+      toast.success("Análise feita com sucesso!");
+      setLoading(false);
     } catch (error) {
+      // Se for erro 503 (serviço sobrecarregado) e ainda tem retries disponíveis, mantém o loading ativo
+      if (
+        error instanceof AxiosError &&
+        error.response?.status === 503 &&
+        retry < MAX_RETRIES
+      ) {
+        await countdown(3);
+        return handleAnalyze(retry + 1);
+      }
+
+      setLoading(false);
+
       if (error instanceof AxiosError) {
-        // Fallback to retry logic if the service is overloaded
-        if (error.response?.status === 503) {
-          setTimeout(() => {
-            let count = 3;
-            const interval = setInterval(() => {
-              toast.error(
-                `Serviço sobrecarregado, tentando novamente em ${count} segundos.`,
-                { duration: 1000 },
-              );
-              count--;
-              if (count === 0) {
-                clearInterval(interval);
-                handleAnalyze();
-              }
-            }, 1000);
-          }, 2000);
-          return;
-        } else {
-          console.log(error.response);
-          const detail = error.response?.data;
-          toast.error(detail || error.message);
-        }
+        toast.error(error.response?.data || error.message);
       } else {
         toast.error("Erro ao analisar e-mail");
       }
-    } finally {
-      setLoading(false);
     }
   };
 
