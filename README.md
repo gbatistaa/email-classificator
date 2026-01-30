@@ -156,26 +156,32 @@ In addition to classification, MailPrism offers:
                                               │ (Text Extract)│         │
                                               └───────┬───────┘         │
                                                       │                 │
-                                                      ▼                 │
-                                              ┌───────────────┐         │
-                                              │  NLP SERVICE  │         │
-                                              │    (spaCy)    │         │
-                                              │ • Clean text  │         │
-                                              │ • Mask CPF    │         │
-                                              │ • Mask emails │         │
-                                              │ • Lemmatize   │         │
-                                              │ • Stopwords   │         │
-                                              └───────┬───────┘         │
-                                                      │                 │
                                                       └────────┬────────┘
                                                                │
                                                                ▼
-                                                      ┌─────────────────┐
-                                                      │   GEMINI API    │
-                                                      │  (AI Analysis)  │
-                                                      └────────┬────────┘
-                                                               │
-                                                               ▼
+                                             ┌──────────────────────────────┐
+                                             │   GENERAL PROCESS SERVICE    │
+                                             │    (process_text_pipeline)   │
+                                             └───────────────┬──────────────┘
+                                                             │
+                                                             ▼
+                                                      ┌───────────────┐
+                                                      │  NLP SERVICE  │
+                                                      │    (spaCy)    │
+                                                      │ • Clean text  │
+                                                      │ • Mask CPF    │
+                                                      │ • Mask emails │
+                                                      │ • Lemmatize   │
+                                                      │ • Stopwords   │
+                                                      └───────┬───────┘
+                                                              │
+                                                              ▼
+                                                     ┌─────────────────┐
+                                                     │   GEMINI API    │
+                                                     │  (AI Analysis)  │
+                                                     └────────┬────────┘
+                                                              │
+                                                              ▼
     ┌─────────────────────────────────────────────────────────────────────┐
     │                         JSON RESPONSE                               │
     │  • category: "Productive" | "Unproductive" | Custom                 │
@@ -200,15 +206,22 @@ In addition to classification, MailPrism offers:
 3. **Backend Processing (FastAPI)**
    - **For PDFs**:
      1. **pypdf** extracts raw text from the PDF document
-     2. **NLP Service (spaCy)** processes the text:
+     2. **General Process Service** calls the unified `process_text_pipeline`
+   - **For TXT files**:
+     1. Content is decoded from UTF-8
+     2. **General Process Service** calls the unified `process_text_pipeline`
+   - **Unified Text Pipeline (`process_text_pipeline`)**:
+     1. **NLP Service (spaCy)** cleans the text:
         - Unicode normalization
         - Masks sensitive data (CPF, email addresses)
-        - Removes PDF artifacts and non-printable characters
+        - Removes artifacts and non-printable characters
         - Normalizes whitespace
+     2. **NLP Service (spaCy)** lemmatizes and filters:
         - Lemmatizes words (converts to root form)
         - Removes stopwords and punctuation
-     3. Processed text is sent to Gemini API
-   - **For TXT/Raw Text**: Content is sent directly to Gemini API (no NLP preprocessing)
+     3. Applies a 15,000 character limit for stability
+     4. Processed text is sent to Gemini API
+   - **For Raw Text (`/analyze-text`)**: Content is sent directly to Gemini API (no NLP preprocessing)
 
 4. **AI Analysis (Google Gemini)**
    - Gemini analyzes the email content
@@ -372,7 +385,7 @@ In addition to classification, MailPrism offers:
 
 ### `POST /analyze`
 
-Analyzes a PDF or TXT file. PDFs go through NLP preprocessing (text cleaning, lemmatization, stopword removal).
+Analyzes a PDF or TXT file. Both file types go through NLP preprocessing via the unified `process_text_pipeline` (text cleaning, lemmatization, stopword removal).
 
 **Request:**
 

@@ -1,4 +1,4 @@
-from backend.services.general_process_service import process_text_pipeline
+from services.general_process_service import process_text_pipeline
 from fastapi import FastAPI, UploadFile, File, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.concurrency import run_in_threadpool
@@ -114,21 +114,21 @@ async def refine_answer(request: RefineAnswerRequest):
 @app.get("/")
 def root():
     return """
-        ____  
-        o8%8888,    
-      o88%8888888.  
-     8'-    -:8888b   
-    8'         8888  
-   d8.-=. ,==-.:888b  
-   >8 `~` :`~' d8888   
-   88         ,88888   
-   88b. `-~  ':88888  
-   888b ~==~ .:88888 
-   88888o--:':::8888      
-   `88888| :::' 8888b  
-   8888^^'       8888b  
-  d888           ,%888b.   
- d88%            %%%8--'-.  
-/88:.__ ,       _%-' ---  -  
-    '''::===..-'   =  --.
+        ____ \n 
+        o8%8888,\n    
+      o88%8888888.\n  
+     8'-    -:8888b\n  
+    8'         8888\n  
+   d8.-=. ,==-.:888b\n  
+   >8 `~` :`~' d8888\n  
+   88         ,88888\n  
+   88b. `-~  ':88888\n  
+   888b ~==~ .:88888\n  
+   88888o--:':::8888\n  
+   `88888| :::' 8888b\n  
+   8888^^'       8888b\n  
+  d888           ,%888b.\n 
+ d88%            %%%8--'-.\n 
+/88:.__ ,       _%-' ---  -\n 
+    '''::===..-'   =  --.\n 
     """
