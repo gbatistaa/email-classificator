@@ -1,3 +1,4 @@
+from backend.services.general_process_service import process_text_pipeline
 from fastapi import FastAPI, UploadFile, File, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.concurrency import run_in_threadpool
@@ -53,30 +54,24 @@ async def analyze_file(file: UploadFile = File(...), customCategories: str = "")
 
         if file.content_type == "application/pdf":
             extracted_text = await run_in_threadpool(process_pdf, file_path)
-            file_path.unlink()
+            file_path.unlink(missing_ok=True)
 
-            cleaned_text = await run_in_threadpool(
-                text_processor.clean_text, extracted_text
-            )
-
-            lemmatized_text = await run_in_threadpool(
-                text_processor.lemmatize_and_remove_stopwords, cleaned_text
-            )
-
-            # Aplico um limite máximo de caracteres para garantir estabilidade do serviço (não afeta a qualidade da análise)
-            lemmatized_text = lemmatized_text[:15000]
-
-            return analyze_email(lemmatized_text, customCategories)
+            return await process_text_pipeline(extracted_text, customCategories)
 
         if file.content_type == "text/plain":
             try:
                 plain_text = content.decode("utf-8")
             except UnicodeDecodeError:
                 raise HTTPException(422, "Arquivo TXT não está em UTF-8")
-            return analyze_email(plain_text, customCategories)
 
+            return await process_text_pipeline(plain_text, customCategories)
+
+        raise HTTPException(415, "Tipo de arquivo não suportado")
+
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(422, f"Erro ao processar PDF: {str(e)}")
+        raise HTTPException(422, f"Erro ao processar email: {str(e)}")
 
 
 # Análise de texto
