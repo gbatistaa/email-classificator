@@ -140,9 +140,28 @@ export default function Home() {
       }
     } catch (error) {
       if (error instanceof AxiosError) {
-        console.log(error.response);
-        const detail = error.response?.data;
-        toast.error(detail || error.message);
+        // Fallback to retry logic if the service is overloaded
+        if (error.response?.status === 503) {
+          setTimeout(() => {
+            let count = 3;
+            const interval = setInterval(() => {
+              toast.error(
+                `Serviço sobrecarregado, tentando novamente em ${count} segundos.`,
+                { duration: 1000 },
+              );
+              count--;
+              if (count === 0) {
+                clearInterval(interval);
+                handleAnalyze();
+              }
+            }, 1000);
+          }, 2000);
+          return;
+        } else {
+          console.log(error.response);
+          const detail = error.response?.data;
+          toast.error(detail || error.message);
+        }
       } else {
         toast.error("Erro ao analisar e-mail");
       }
