@@ -42,14 +42,14 @@ export default function ThemeProvider({ children }: ThemeProviderProps) {
     };
   }, [setSystemTheme]);
 
-  // Apply theme class to document body
+  // Apply theme class to html element
   useEffect(() => {
     if (resolvedTheme === "light") {
-      document.body.classList.add("light");
-      document.body.classList.remove("dark");
+      document.documentElement.classList.add("light");
+      document.documentElement.classList.remove("dark");
     } else {
-      document.body.classList.add("dark");
-      document.body.classList.remove("light");
+      document.documentElement.classList.add("dark");
+      document.documentElement.classList.remove("light");
     }
   }, [resolvedTheme]);
 

@@ -27,14 +27,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <Provider>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} overflow-y-scroll antialiased`}
-        >
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} overflow-y-scroll antialiased`}
+      >
+        <Provider>
           <ThemeProvider>{children}</ThemeProvider>
           <Toaster />
-        </body>
-      </Provider>
+        </Provider>
+      </body>
     </html>
   );
 }
